@@ -95,14 +95,14 @@ void DirectX::drawLine(int x1,int y1,int x2,int y2,Color color)
 			swap(x1,x2);
 			swap(y1,y2);
 		}
-		double A = y2-y1;
-		double B = x1-x2;
-		double C = x2*y1-x1*y2;
+		float A = y2-y1;
+		float B = x1-x2;
+		float C = x2*y1-x1*y2;
 		int incrementY = (y2>y1)?1:-1;
 		for (int x=x1,y=y1;x<=x2;++x)
 		{
 			drawPixel(x,y,color);
-			double k = A*(x+1)+B*(y+incrementY)+C;
+			float k = A*(x+1)+B*(y+incrementY)+C;
 			if (k*incrementY>=0)
 			{
 				y += incrementY;
@@ -116,14 +116,14 @@ void DirectX::drawLine(int x1,int y1,int x2,int y2,Color color)
 			swap(x1,x2);
 			swap(y1,y2);
 		}
-		double A = y2-y1;
-		double B = x1-x2;
-		double C = x2*y1-x1*y2;
+		float A = y2-y1;
+		float B = x1-x2;
+		float C = x2*y1-x1*y2;
 		int incrementX = (x2>x1)?1:-1;
 		for (int x=x1,y=y1;y<=y2;++y)
 		{
 			drawPixel(x,y,color);
-			double k = A*(x+incrementX)+B*(y+1)+C;
+			float k = A*(x+incrementX)+B*(y+1)+C;
 			if (k*incrementX<=0)
 			{
 				x += incrementX;
@@ -161,58 +161,83 @@ void DirectX::drawScanLine( Vector2 &v1, Vector2 &v2)
 	{
 		swap(v1,v2);
 	}
+	int x_start = v1.x;
 	int x_end = v2.x;
 	Color color = v1.color;
 	Color d_color = v2.color-v1.color;
-	for (int x=v1.x;x<=x_end;++x)
+	bool isZero = x_end-x_start?false:true;
+	for (int x=x_start;x<=x_end;++x)
 	{
+		float factor = 0;
+		if (!isZero)
+		{
+			factor = (float(x-x_start))/(x_end-x_start);
+		}
 		drawPixel(x,v1.y,color);
-		color = v1.color + d_color*(x-v1.x)/(v2.x-v1.x); 
+		color = v1.color + d_color*factor; 
 	}
 }
 /************************************************************************/
-/* 绘制底平三角形	 v1为上顶点												*/
+/* 绘制底平三角形	 v1为上顶点	(v2左下，v3右下)		
+*/
 /************************************************************************/
 void DirectX::drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 {
+	if (v2.x>v3.x)
+	{
+		swap(v2,v3);
+	}
+	int y = v1.y;
 	int startY = v1.y;
 	int endY = v2.y;
-	double LX = v1.x,RX = v1.x;
-	double ldx = (v2.x - v1.x) / (v2.y - v1.y);
-	double rdx = (v3.x - v1.x) / (v3.y - v1.y);
+	float LX = v1.x,RX = v1.x;
 	Color d_left_color = v2.color-v1.color;
 	Color d_right_color = v3.color-v1.color;
-	for (;startY<=endY;++startY)
+	for (;y<=endY;++y)
 	{
-		double factor = (startY-v1.y)/(endY-v1.y);
+		float factor = 0;
+		if (startY-endY!=0)
+		{
+			factor = (float(y-startY))/(endY-startY);
+		}
+		LX = v1.x+(v2.x-v1.x)*factor;
+		RX = v1.x+(v3.x-v1.x)*factor;
 		Color  co = d_left_color*factor;
 		Color left_color = v1.color + d_left_color*factor;
 		Color right_color = v1.color + d_right_color*factor;
-		drawScanLine(Vector2(LX,startY,left_color),Vector2(RX,startY,right_color));
-		//drawScanLine(Vector2(LX,startY,Color(0,0,255,0)),Vector2(RX,startY,Color(0,0,0,0)));
-		LX += ldx;
-		RX += rdx;
+		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
+
 	}
 }
 
 /************************************************************************/
-/* 绘制顶平三角形		v3为底顶点											*/
+/* 绘制顶平三角形		v3为底顶点	(v1左上，v2右上)		
+*/
 /************************************************************************/
 void DirectX::drawTriangleTopFlat(Vector2 &v1, Vector2 &v2, Vector2 &v3)
 {
+	if (v1.x>v2.x)
+	{
+		swap(v1,v2);
+	}
+	int y = v3.y;
 	int startY = v3.y;
 	int endY = v2.y;
-	double LX = v3.x,RX = v3.x;
-	double ldx = ((double)(v3.x - v1.x)) / (v3.y - v1.y);
-	double rdx = ((double)(v3.x - v2.x)) / (v3.y - v2.y);
-	for (;startY>=endY;--startY)
-	{
-		double factor = (v3.y-startY)/(v3.y-endY);
+	int LX = v3.x,RX = v3.x;
+
+	for (;y>=endY;--y)
+	{	
+		float factor =0;
+		if (startY-endY!=0)
+		{
+			factor = (float(startY-y))/(startY-endY);
+		}
+		LX = v3.x+(v1.x-v3.x)*factor;
+		RX = v3.x+(v2.x-v3.x)*factor;
 		Color left_color = v3.color + (v1.color-v3.color)*factor;
 		Color right_color = v3.color + (v2.color-v3.color)*factor;
-		drawScanLine(Vector2(LX,startY,left_color),Vector2(RX,startY,right_color));
-		LX -= ldx;
-		RX -= rdx;
+		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
+
 	}
 }
 
@@ -248,7 +273,7 @@ void DirectX::drawTriangle( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 		else
 		{
 			Color color = v3.color + (v1.color-v3.color)*(v2.y-v3.y)/(v1.y-v3.y);
-			Vector2 v4(v1.x+(double(v2.y-v1.y)/(v3.y-v1.y))*(v3.x-v1.x),v2.y,color);
+			Vector2 v4(v1.x+(float(v2.y-v1.y)/(v3.y-v1.y))*(v3.x-v1.x),v2.y,color);
 			drawTriangleBottomFlat(v1,v2,v4);
 			drawTriangleTopFlat(v2,v4,v3);
 		}
@@ -277,14 +302,36 @@ void DirectX::draw_wireframe_model(Model& model,const set<int> &remove_vertex_in
 		{
 			continue;
 		}
-		Vector3 v1 = model.trans_vertexes_[model.poly_indices_[index].indices[0]];
-		Vector3 v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
-		Vector3 v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
-		drawLine(v1.x_,v1.y_,v2.x_,v2.y_,Color(0,255,0,0));
-		drawLine(v3.x_,v3.y_,v2.x_,v2.y_,Color(0,255,0,0));
-		drawLine(v1.x_,v1.y_,v3.x_,v3.y_,Color(0,255,0,0));
+		Vertex v1 = model.trans_vertexes_[model.poly_indices_[index].indices[0]];
+		Vertex v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
+		Vertex v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
+		drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
+		drawLine(v3.position_.x_,v3.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
+		drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,Color(0,255,0,0));
 	}
 }
+
+void DirectX::draw_mesh_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index)
+{
+	int index = 0;
+	for (int index=0;index<model.poly_indices_.size();++index)
+	{
+		//剔除或不在视锥内
+		if (remove_triangle_index.count(index)||is_out(model.poly_indices_[index],remove_vertex_index))
+		{
+			continue;
+		}
+		Vertex v1 = model.trans_vertexes_[model.poly_indices_[index].indices[0]];
+		Vertex v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
+		Vertex v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
+		
+		drawTriangle(v1.to_vector2(),v2.to_vector2(),v3.to_vector2());
+		//drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
+		//drawLine(v3.position_.x_,v3.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
+		//drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,Color(0,255,0,0));
+	}
+}
+
 
 void DirectX::flipSurface()
 {

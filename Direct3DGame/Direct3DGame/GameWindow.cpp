@@ -5,6 +5,7 @@
 #include "DirectXLib.h"
 #include "Math.h"
 #include "Matrix.h"
+#include "Vertex.h"
 #include <WindowsX.h>
 
 using namespace std;
@@ -45,7 +46,7 @@ enum State
 };
 
 State g_game_state = MODEL_TRANSFORM;
-
+const float g_rotate_theta = 3.5;
 LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -84,11 +85,11 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 			}
 			else if (wparam==VK_LEFT)
 			{
-				g_model.rotate_theta = 10;
+				g_model.rotate_theta = g_rotate_theta;
 			}
 			else if (wparam==VK_RIGHT)
 			{
-				g_model.rotate_theta = -10;
+				g_model.rotate_theta = -g_rotate_theta;
 			}
 			else if (wparam==VK_OEM_PLUS)
 			{
@@ -143,9 +144,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 			break;
 		default:
 			break;
-		}
-
-		
+		}	
 		break;
 	case WM_PAINT:
 		{
@@ -166,11 +165,40 @@ void cube_init()
 		{-1,-1,1},{-1,1,1},{1,-1,1},{1,1,1}
 	};
 
+	int colors[8][3] = {
+		{255,0,0},{0,255,0},{0,0,255},
+		{55,255,0},{45,0,255},{255,0,55},
+		{255,0,0},{0,255,0}
+	};
+
+	//int colors[8][3] = {
+	//	{255,0,0},{255,0,0},{255,0,0},
+	//	{255,0,0},{255,0,0},{255,0,0},
+	//	{255,0,0},{255,0,0}
+	//};
+
 	for (int i=0;i<8;++i)
 	{
 		Vector3 v(cube_vertex[i][0],cube_vertex[i][1],cube_vertex[i][2]);
-		model.local_vertexes_.push_back(v);
-		model.trans_vertexes_.push_back(v+model.world_position_);
+		Color color(0,colors[i][0],colors[i][1],colors[i][2]);
+		Vertex vertex(v,color);
+		model.local_vertexes_.push_back(vertex);
+		model.trans_vertexes_.push_back(Vertex(v+model.world_position_,color));
+	}
+
+	// 模型空间旋转
+	Matrix model_rotateY_matrix;
+	model_rotateY_matrix.setRotate(Vector3(0,1,0),45);
+	Matrix model_rotateX_matrix;
+	model_rotateX_matrix.setRotate(Vector3(1,0,0),45);
+	Matrix model_rotateZ_matrix;
+	model_rotateZ_matrix.setRotate(Vector3(0,0,1),45);
+	Matrix matrix = model_rotateX_matrix*model_rotateY_matrix*model_rotateZ_matrix;
+	int index = 0;
+	for (auto &v : model.local_vertexes_)
+	{
+		v.position_ = v.position_*matrix;
+		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
 	}
 
 	model.poly_indices_.push_back(TrangleIndex(0,2,3));
@@ -227,9 +255,18 @@ void draw_line()
 /************************************************************************/
 void draw_triangle()
 {
-	g_directX.drawTriangle(Vector2(350,100,Color(0,255,0,0)),
-		Vector2(100,700,Color(0,0,255,0)),
-		Vector2(700,700,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(350,100,Color(0,255,0,0)),
+	//	Vector2(100,700,Color(0,0,255,0)),
+	//	Vector2(700,700,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(350,100,Color(0,255,0,0)),
+	//	Vector2(700,100,Color(0,0,255,0)),
+	//	Vector2(700,700,Color(0,0,0,255)));
+	g_directX.drawTriangle(Vector2(100,100,Color(0,255,0,0)),
+		Vector2(100,200,Color(0,0,255,0)),
+		Vector2(200,100,Color(0,0,0,255)));
+	g_directX.drawTriangle(Vector2(200,200,Color(0,255,0,0)),
+		Vector2(100,200,Color(0,0,255,0)),
+		Vector2(200,100,Color(0,0,0,255)));
 }
 
 /************************************************************************/
@@ -262,8 +299,8 @@ void draw_cube()
 	int index = 0;
 	for (auto &v : model.local_vertexes_)
 	{
-		v = v*model_transform;
-		model.trans_vertexes_[index++] = v+model.world_position_;
+		v.position_ = v.position_*model_transform;
+		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
 	}
 
 
@@ -294,9 +331,9 @@ void draw_cube()
 	for (auto v : model.poly_indices_)
 	{
 		//背面剔除
-		Vector3 v1 = model.trans_vertexes_[v.indices[0]];
-		Vector3 v2 = model.trans_vertexes_[v.indices[1]];
-		Vector3 v3 = model.trans_vertexes_[v.indices[2]];
+		Vector3 v1 = model.trans_vertexes_[v.indices[0]].position_;
+		Vector3 v2 = model.trans_vertexes_[v.indices[1]].position_;
+		Vector3 v3 = model.trans_vertexes_[v.indices[2]].position_;
 		if (camera.is_back(v1,v2,v3))
 		{
 			remove_triangle_index.insert(index2);
@@ -310,15 +347,15 @@ void draw_cube()
 	// 4.3.3 透视除法
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
-		model.trans_vertexes_[i].x_ = model.trans_vertexes_[i].x_/model.trans_vertexes_[i].w_; 
-		model.trans_vertexes_[i].y_ = model.trans_vertexes_[i].y_/model.trans_vertexes_[i].w_; 
-		model.trans_vertexes_[i].z_ = model.trans_vertexes_[i].z_/model.trans_vertexes_[i].w_; 
+		model.trans_vertexes_[i].position_.x_ = model.trans_vertexes_[i].position_.x_/model.trans_vertexes_[i].position_.w_; 
+		model.trans_vertexes_[i].position_.y_ = model.trans_vertexes_[i].position_.y_/model.trans_vertexes_[i].position_.w_; 
+		model.trans_vertexes_[i].position_.z_ = model.trans_vertexes_[i].position_.z_/model.trans_vertexes_[i].position_.w_; 
 	}
 	set<int> remove_vertex_index;
 	// 4.3.4 记录剔除点
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
-		if (camera.transform_check_cvv(model.trans_vertexes_[i]))
+		if (camera.transform_check_cvv(model.trans_vertexes_[i].position_))
 		{
 			remove_vertex_index.insert(i);
 		}
@@ -330,14 +367,15 @@ void draw_cube()
 
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
-		model.trans_vertexes_[i].x_ *= WIDTH/2;
-		model.trans_vertexes_[i].x_ += WIDTH/2;
-		model.trans_vertexes_[i].y_ *= HEIGHT/2;
-		model.trans_vertexes_[i].y_ = HEIGHT/2-model.trans_vertexes_[i].y_;
+		model.trans_vertexes_[i].position_.x_ *= WIDTH/2;
+		model.trans_vertexes_[i].position_.x_ += WIDTH/2;
+		model.trans_vertexes_[i].position_.y_ *= HEIGHT/2;
+		model.trans_vertexes_[i].position_.y_ = HEIGHT/2-model.trans_vertexes_[i].position_.y_;
 	}
 
 	//绘制线框模型
-	g_directX.draw_wireframe_model(model,remove_vertex_index,remove_triangle_index);
+	//g_directX.draw_wireframe_model(model,remove_vertex_index,remove_triangle_index);
+	g_directX.draw_mesh_model(model,remove_vertex_index,remove_triangle_index);
 
 }
 
@@ -389,7 +427,7 @@ void GameUpdate(HWND hwnd)
 	g_directX.lockSurface();
 
 	draw_cube();
-
+	//draw_triangle();
 	g_directX.unlockSurface();
 	//Sleep(1000);
 	g_directX.flipSurface();

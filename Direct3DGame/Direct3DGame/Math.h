@@ -67,13 +67,23 @@ inline Color operator-(const Color &color1,const Color &color2)
 class Vector2
 {
 public:
-	Vector2(double nx,double ny,Color nc):x(nx),y(ny),color(nc){}
+	Vector2(float nx,float ny,Color nc):x(nx),y(ny),color(nc){}
 	bool operator==(const Vector2 &v)const{return x==v.x&&y==v.y;}
-
+	Vector2 operator-(const Vector2 &v)const{return Vector2(x-v.x,y-v.y,color-v.color);}
+	Vector2 operator+(const Vector2 &v)const{return Vector2(x+v.x,y+v.y,color+v.color);}
 	Color color;
-	double x;
-	double y;
+	float x;
+	float y;
 };
+inline Vector2 operator*(const Vector2 &v,float f)
+{
+	return Vector2(v.x*f,v.y*f,v.color);
+}
+
+inline Vector2 operator*(float f,const Vector2 &v)
+{
+	return Vector2(v.x*f,v.y*f,v.color);
+}
 
 float Sin(float degree);
 float Cos(float degree);

@@ -46,6 +46,7 @@ public:
 
 	//绘制线框模型
 	void draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
+	void draw_mesh_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
 	//获取设备
 	IDirect3DDevice9* getDevice();
 

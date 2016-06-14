@@ -4,6 +4,7 @@
 #include <vector>
 #include "Vector3.h"
 #include "Matrix.h"
+#include "Vertex.h"
 using namespace std;
 
 class Camera
@@ -17,8 +18,8 @@ public:
 	void set_position(const Matrix &m);
 	void set_lookAt(const Vector3& point);
 	void set_w_h(float w_h){w_h_=w_h;}
-	void canonicalview_volume(vector<Vector3> &vertexes);
-	void view_transform(vector<Vector3> &vertexes);
+	void canonicalview_volume(vector<Vertex> &vertexes);
+	void view_transform(vector<Vertex> &vertexes);
 	int transform_check_cvv(const Vector3 &v);
 	bool is_back(const Vector3 &v1,const Vector3 &v2,const Vector3 &v3);
 

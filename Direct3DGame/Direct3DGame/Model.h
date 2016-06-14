@@ -18,8 +18,8 @@ public:
 	Model(Vector3 position):world_position_(position){}
 
 	Vector3 world_position_;
-	vector<Vector3> local_vertexes_;
-	vector<Vector3> trans_vertexes_;
+	vector<Vertex> local_vertexes_;
+	vector<Vertex> trans_vertexes_;
 	vector<TrangleIndex> poly_indices_;
 };
 #endif

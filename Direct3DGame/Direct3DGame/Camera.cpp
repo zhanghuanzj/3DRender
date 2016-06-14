@@ -10,7 +10,7 @@ void Camera::set_lookAt(const Vector3& rotate_angle)
 	look_at_theta_ = look_at_theta_+rotate_angle;
 }
 
-void Camera::view_transform(vector<Vector3> &vertexes)
+void Camera::view_transform(vector<Vertex> &vertexes)
 {
 	Matrix view_move_matrix;
 	view_move_matrix.identify();
@@ -24,12 +24,12 @@ void Camera::view_transform(vector<Vector3> &vertexes)
 	Matrix view_transform_matrix = view_move_matrix*view_rotateX_matrix*view_rotateY_matrix;
 	for (auto &v : vertexes)
 	{
-		v *= view_transform_matrix;
+		v.position_ *= view_transform_matrix;
 	}
 }
 
 //×ª»»µ½cvv²Ã¼ô¿Õ¼ä
-void Camera::canonicalview_volume(vector<Vector3> &vertexes)
+void Camera::canonicalview_volume(vector<Vertex> &vertexes)
 {
 	Matrix cvv_matrix;
 	cvv_matrix.identify();
@@ -41,7 +41,7 @@ void Camera::canonicalview_volume(vector<Vector3> &vertexes)
 	cvv_matrix.m34 = 1;
 	for (auto &v : vertexes)
 	{
-		v *= cvv_matrix;
+		v.position_ *= cvv_matrix;
 	}
 }
 
