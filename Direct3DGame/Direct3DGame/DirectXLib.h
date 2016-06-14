@@ -5,6 +5,7 @@
 #include<d3dx9.h>
 #include <windows.h>
 #include <iostream>
+#include <set>
 #include "Math.h"
 #include "Camera.h"
 #include "Model.h"
@@ -44,7 +45,7 @@ public:
 	void drawTriangle( Vector2 &v1, Vector2 &v2, Vector2 &v3);
 
 	//绘制线框模型
-	void draw_wireframe_model(Model& model);
+	void draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
 	//获取设备
 	IDirect3DDevice9* getDevice();
 

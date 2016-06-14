@@ -255,15 +255,34 @@ void DirectX::drawTriangle( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 	}
 }
 
-void DirectX::draw_wireframe_model(Model& model)
+bool is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index)
 {
-
-
-	for (auto v :model.poly_indices_)
+	for (auto i : triangle.indices)
 	{
-		drawLine(model.trans_vertexes_[v.indices[0]].x_,model.trans_vertexes_[v.indices[0]].y_,model.trans_vertexes_[v.indices[1]].x_,model.trans_vertexes_[v.indices[1]].y_,Color(0,255,0,0));
-		drawLine(model.trans_vertexes_[v.indices[2]].x_,model.trans_vertexes_[v.indices[2]].y_,model.trans_vertexes_[v.indices[1]].x_,model.trans_vertexes_[v.indices[1]].y_,Color(0,255,0,0));
-		drawLine(model.trans_vertexes_[v.indices[0]].x_,model.trans_vertexes_[v.indices[0]].y_,model.trans_vertexes_[v.indices[2]].x_,model.trans_vertexes_[v.indices[2]].y_,Color(0,255,0,0));
+		if (remove_vertex_index.count(i))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void DirectX::draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index)
+{
+	int index = 0;
+	for (int index=0;index<model.poly_indices_.size();++index)
+	{
+		//剔除或不在视锥内
+		if (remove_triangle_index.count(index)||is_out(model.poly_indices_[index],remove_vertex_index))
+		{
+			continue;
+		}
+		Vector3 v1 = model.trans_vertexes_[model.poly_indices_[index].indices[0]];
+		Vector3 v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
+		Vector3 v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
+		drawLine(v1.x_,v1.y_,v2.x_,v2.y_,Color(0,255,0,0));
+		drawLine(v3.x_,v3.y_,v2.x_,v2.y_,Color(0,255,0,0));
+		drawLine(v1.x_,v1.y_,v3.x_,v3.y_,Color(0,255,0,0));
 	}
 }
 

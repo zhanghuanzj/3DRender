@@ -1,6 +1,8 @@
 #ifndef MATH_H_
 #define MATH_H_
-#include <math.h>
+#include <cmath>
+
+#define PI 3.141592654
 
 class Color
 {

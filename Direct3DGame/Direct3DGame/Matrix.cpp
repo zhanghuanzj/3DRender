@@ -100,9 +100,10 @@ Vector3	operator*(const Vector3 &p, const Matrix &m) {
 	// Grind through the linear algebra.
 
 	return Vector3(
-		p.x_*m.m11 + p.y_*m.m21 + p.z_*m.m31 + m.tx,
-		p.x_*m.m12 + p.y_*m.m22 + p.z_*m.m32 + m.ty,
-		p.x_*m.m13 + p.y_*m.m23 + p.z_*m.m33 + m.tz
+		p.x_*m.m11 + p.y_*m.m21 + p.z_*m.m31 + p.w_*m.tx,
+		p.x_*m.m12 + p.y_*m.m22 + p.z_*m.m32 + p.w_*m.ty,
+		p.x_*m.m13 + p.y_*m.m23 + p.z_*m.m33 + p.w_*m.tz,
+		p.x_*m.m14 + p.y_*m.m24 + p.z_*m.m34 + p.w_*m.m44
 		);
 }
 

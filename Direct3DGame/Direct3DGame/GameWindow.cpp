@@ -1,6 +1,7 @@
 ﻿#include <windows.h>
 #include <assert.h>
 #include <iostream>
+#include <set>
 #include "DirectXLib.h"
 #include "Math.h"
 #include "Matrix.h"
@@ -172,18 +173,18 @@ void cube_init()
 		model.trans_vertexes_.push_back(v+model.world_position_);
 	}
 
-	model.poly_indices_.push_back(TrangleIndex(0,1,2));
-	model.poly_indices_.push_back(TrangleIndex(1,2,3));
-	model.poly_indices_.push_back(TrangleIndex(2,3,6));
-	model.poly_indices_.push_back(TrangleIndex(3,6,7));
-	model.poly_indices_.push_back(TrangleIndex(4,6,7));
-	model.poly_indices_.push_back(TrangleIndex(4,7,5));
-	model.poly_indices_.push_back(TrangleIndex(0,4,5));
-	model.poly_indices_.push_back(TrangleIndex(0,5,1));
+	model.poly_indices_.push_back(TrangleIndex(0,2,3));
+	model.poly_indices_.push_back(TrangleIndex(3,1,0));  //front
+	model.poly_indices_.push_back(TrangleIndex(7,3,2));
+	model.poly_indices_.push_back(TrangleIndex(2,6,7));  //right
+	model.poly_indices_.push_back(TrangleIndex(6,4,5));
+	model.poly_indices_.push_back(TrangleIndex(5,7,6));  //back
+	model.poly_indices_.push_back(TrangleIndex(1,5,4));
+	model.poly_indices_.push_back(TrangleIndex(4,0,1));  //left
 	model.poly_indices_.push_back(TrangleIndex(1,3,7));
-	model.poly_indices_.push_back(TrangleIndex(1,7,5));
-	model.poly_indices_.push_back(TrangleIndex(0,2,6));
-	model.poly_indices_.push_back(TrangleIndex(0,6,4));
+	model.poly_indices_.push_back(TrangleIndex(7,5,1));  //top
+	model.poly_indices_.push_back(TrangleIndex(2,0,4));
+	model.poly_indices_.push_back(TrangleIndex(4,6,2));  //button
 }
 
 /************************************************************************/
@@ -267,7 +268,7 @@ void draw_cube()
 
 
 	/************************************************************************/
-	/* 4.2  取景变换                                                         */
+	/* 4.2  取景变换(相机空间)                                                         */
 	/************************************************************************/
 	Camera &camera = Camera::instance();
 
@@ -284,12 +285,43 @@ void draw_cube()
 
 
 	/************************************************************************/
-	/* 4.3  投影变换                                                         */
+	/* 4.3  投影变换(裁剪空间)                                                        */
 	/************************************************************************/
+	// 4.3.1 CVV裁剪
+	set<int> remove_triangle_index;
+	// 4.3.2 记录剔除三角形
+	int index2 = 0;
+	for (auto v : model.poly_indices_)
+	{
+		//背面剔除
+		Vector3 v1 = model.trans_vertexes_[v.indices[0]];
+		Vector3 v2 = model.trans_vertexes_[v.indices[1]];
+		Vector3 v3 = model.trans_vertexes_[v.indices[2]];
+		if (camera.is_back(v1,v2,v3))
+		{
+			remove_triangle_index.insert(index2);
+		}
+		index2++;
+	}
+	camera.canonicalview_volume(model.trans_vertexes_);
+
+
+
+	// 4.3.3 透视除法
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
-		model.trans_vertexes_[i].x_ = model.trans_vertexes_[i].x_/model.trans_vertexes_[i].z_; 
-		model.trans_vertexes_[i].y_ = model.trans_vertexes_[i].y_/model.trans_vertexes_[i].z_; 
+		model.trans_vertexes_[i].x_ = model.trans_vertexes_[i].x_/model.trans_vertexes_[i].w_; 
+		model.trans_vertexes_[i].y_ = model.trans_vertexes_[i].y_/model.trans_vertexes_[i].w_; 
+		model.trans_vertexes_[i].z_ = model.trans_vertexes_[i].z_/model.trans_vertexes_[i].w_; 
+	}
+	set<int> remove_vertex_index;
+	// 4.3.4 记录剔除点
+	for (int i=0;i<model.trans_vertexes_.size();++i)
+	{
+		if (camera.transform_check_cvv(model.trans_vertexes_[i]))
+		{
+			remove_vertex_index.insert(i);
+		}
 	}
 
 	/************************************************************************/
@@ -305,7 +337,7 @@ void draw_cube()
 	}
 
 	//绘制线框模型
-	g_directX.draw_wireframe_model(model);
+	g_directX.draw_wireframe_model(model,remove_vertex_index,remove_triangle_index);
 
 }
 
@@ -345,6 +377,9 @@ HWND GameStart(HINSTANCE hInstance,int nShowCmd,string wcName,string title)
 	cube_init();
 	transform_attribute_init();
 
+	//相机初始化
+	Camera &camera = Camera::instance();
+	camera.set_w_h(WIDTH/HEIGHT);
 	return hwnd;
 }
 

@@ -9,11 +9,12 @@
 class Matrix
 {
 public:
-	float m11 , m12 , m13 ;
-	float m21 , m22 , m23 ;
-	float m31 , m32 , m33 ;
-	float tx  , ty  , tz  ;
+	float m11 , m12 , m13 ,m14;
+	float m21 , m22 , m23 ,m24;
+	float m31 , m32 , m33 ,m34;
+	float tx  , ty  , tz  ,m44;
 
+	Matrix():m14(0),m24(0),m34(0),m44(1){}
 	void identify();
 	void setTranslation(const Vector3& d);
 	void zeroTranslation();
