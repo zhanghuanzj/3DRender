@@ -161,19 +161,21 @@ void DirectX::drawScanLine( Vector2 &v1, Vector2 &v2)
 	{
 		swap(v1,v2);
 	}
-	int x_start = v1.x;
+	int x_start = v1.x-2;
 	int x_end = v2.x;
 	Color color = v1.color;
 	Color d_color = v2.color-v1.color;
 	bool isZero = x_end-x_start?false:true;
-	for (int x=x_start;x<=x_end;++x)
+	float x = v1.x;
+	float dx = (v2.x-v1.x)/(x_end-x_start);
+	for (int i=x_start;i<=x_end;++i,x+=dx)
 	{
 		float factor = 0;
 		if (!isZero)
 		{
-			factor = (float(x-x_start))/(x_end-x_start);
+			factor = (float(x-v1.x))/(v2.x-v1.x);
 		}
-		drawPixel(x,v1.y,color);
+		drawPixel(i,v1.y,color);
 		color = v1.color + d_color*factor; 
 	}
 }
@@ -187,13 +189,12 @@ void DirectX::drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 	{
 		swap(v2,v3);
 	}
-	int y = v1.y;
 	int startY = v1.y;
 	int endY = v2.y;
 	float LX = v1.x,RX = v1.x;
 	Color d_left_color = v2.color-v1.color;
 	Color d_right_color = v3.color-v1.color;
-	for (;y<=endY;++y)
+	for (int y=startY;y<=endY;++y)
 	{
 		float factor = 0;
 		if (startY-endY!=0)
@@ -206,7 +207,6 @@ void DirectX::drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 		Color left_color = v1.color + d_left_color*factor;
 		Color right_color = v1.color + d_right_color*factor;
 		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
-
 	}
 }
 
@@ -220,24 +220,21 @@ void DirectX::drawTriangleTopFlat(Vector2 &v1, Vector2 &v2, Vector2 &v3)
 	{
 		swap(v1,v2);
 	}
-	int y = v3.y;
 	int startY = v3.y;
 	int endY = v2.y;
-	int LX = v3.x,RX = v3.x;
-
-	for (;y>=endY;--y)
-	{	
+	float LX = v3.x,RX = v3.x;
+	for (int y=startY;y>=endY;--y)
+	{
 		float factor =0;
 		if (startY-endY!=0)
 		{
 			factor = (float(startY-y))/(startY-endY);
 		}
-		LX = v3.x+(v1.x-v3.x)*factor;
+		LX = v3.x+(v1.x-v3.x)*factor;	
 		RX = v3.x+(v2.x-v3.x)*factor;
 		Color left_color = v3.color + (v1.color-v3.color)*factor;
 		Color right_color = v3.color + (v2.color-v3.color)*factor;
 		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
-
 	}
 }
 

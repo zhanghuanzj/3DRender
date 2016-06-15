@@ -186,6 +186,10 @@ void cube_init()
 		model.trans_vertexes_.push_back(Vertex(v+model.world_position_,color));
 	}
 
+	Matrix model_move_matrix;
+	model_move_matrix.identify();
+	model_move_matrix.setTranslation(Vector3(0,0,-5));
+	model.world_position_ = model.world_position_*model_move_matrix;
 	// 模型空间旋转
 	Matrix model_rotateY_matrix;
 	model_rotateY_matrix.setRotate(Vector3(0,1,0),45);
@@ -194,13 +198,22 @@ void cube_init()
 	Matrix model_rotateZ_matrix;
 	model_rotateZ_matrix.setRotate(Vector3(0,0,1),45);
 	Matrix matrix = model_rotateX_matrix*model_rotateY_matrix*model_rotateZ_matrix;
-	int index = 0;
+	int index2 = 0;
 	for (auto &v : model.local_vertexes_)
 	{
 		v.position_ = v.position_*matrix;
-		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
+		model.trans_vertexes_[index2++].position_ = v.position_+model.world_position_;
 	}
 
+	Matrix model_rotate_matrix;
+	model_rotate_matrix.setRotate(Vector3(0,1,0),199);
+	//4.1.4 转换到世界坐标系
+	int index = 0;
+	for (auto &v : model.local_vertexes_)
+	{
+		v.position_ = v.position_*model_rotate_matrix;
+		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
+	}
 	model.poly_indices_.push_back(TrangleIndex(0,2,3));
 	model.poly_indices_.push_back(TrangleIndex(3,1,0));  //front
 	model.poly_indices_.push_back(TrangleIndex(7,3,2));
@@ -261,12 +274,18 @@ void draw_triangle()
 	//g_directX.drawTriangle(Vector2(350,100,Color(0,255,0,0)),
 	//	Vector2(700,100,Color(0,0,255,0)),
 	//	Vector2(700,700,Color(0,0,0,255)));
-	g_directX.drawTriangle(Vector2(100,100,Color(0,255,0,0)),
-		Vector2(100,200,Color(0,0,255,0)),
-		Vector2(200,100,Color(0,0,0,255)));
-	g_directX.drawTriangle(Vector2(200,200,Color(0,255,0,0)),
-		Vector2(100,200,Color(0,0,255,0)),
-		Vector2(200,100,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(100,100,Color(0,255,0,0)),
+	//	Vector2(100,200,Color(0,0,255,0)),
+	//	Vector2(200,100,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(200,200,Color(0,255,0,0)),
+	//	Vector2(100,200,Color(0,0,255,0)),
+	//	Vector2(200,100,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(100,100,Color(0,255,0,0)),
+	//	Vector2(450,300,Color(0,0,255,0)),
+	//	Vector2(200,200,Color(0,0,0,255)));
+	//g_directX.drawTriangle(Vector2(200,200,Color(0,255,0,0)),
+	//	Vector2(450,300,Color(0,0,255,0)),
+	//	Vector2(550,500,Color(0,0,0,255)));
 }
 
 /************************************************************************/
