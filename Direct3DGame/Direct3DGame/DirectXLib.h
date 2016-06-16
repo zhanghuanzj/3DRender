@@ -28,21 +28,21 @@ public:
 	void lockSurface();
 	void unlockSurface();
 	//绘制像素到缓冲区
-	void drawPixel(int x,int y,Color color);
+	void drawPixel(int x,int y,AColor color);
 
 	//缓冲区翻转显示
 	void flipSurface();
 
 	//绘制直线
-	void drawLine(int ,int ,int ,int,Color  );
+	void drawLine(int ,int ,int ,int,AColor  );
 
 	//绘制三角形
-	bool compare(const Vector2 &v1,const Vector2 &v2){return v1.y<v2.y;}
-	void sortTriangleVector2( Vector2 &v1, Vector2 &v2, Vector2 &v3);
-	void drawScanLine( Vector2 &v1, Vector2 &v2);
-	void drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3);
-	void drawTriangleTopFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3);
-	void drawTriangle( Vector2 &v1, Vector2 &v2, Vector2 &v3);
+	bool compare(const Vertex &v1,const Vertex &v2){return v1.position_.y_<v2.position_.y_;}
+	void sortTriangleVector2( Vertex &v1, Vertex &v2, Vertex &v3);
+	void drawScanLine( Vertex &v1, Vertex &v2);
+	void drawTriangleBottomFlat( Vertex &v1, Vertex &v2, Vertex &v3);
+	void drawTriangleTopFlat( Vertex &v1, Vertex &v2, Vertex &v3);
+	void drawTriangle( Vertex &v1, Vertex &v2, Vertex &v3);
 
 	//绘制线框模型
 	void draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
@@ -64,6 +64,7 @@ private:
 	Camera &camera;
 	int width_;
 	int height_;
+	Texture *p_texture;
 	 
 
 };

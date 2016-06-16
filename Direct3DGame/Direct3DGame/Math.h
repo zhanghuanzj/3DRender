@@ -4,60 +4,67 @@
 
 #define PI 3.141592654
 
-class Color
+class AColor
 {
 public:
-	Color(int a,int r,int g,int b):a_(a),r_(r),g_(g),b_(b){};
-
+	AColor(int a,int r,int g,int b):a_(a),r_(r),g_(g),b_(b){};
+	AColor interp(const AColor &c,float factor)
+	{
+		int a = a_ + (c.a_-a_)*factor;
+		int r = r_ + (c.r_-r_)*factor;
+		int g = g_ + (c.g_-g_)*factor;
+		int b = b_ + (c.b_-b_)*factor;
+		return AColor(a,r,g,b);
+	}
 	int a_;
 	int r_;
 	int g_;
 	int b_;
 };
 
-inline Color operator*(const Color &color,double v)
+inline AColor operator*(const AColor &color,double v)
 {
-	return Color(color.a_ * v,
+	return AColor(color.a_ * v,
 				 color.r_ * v,
 				 color.g_ * v,
 				 color.b_ * v);
 }
 
-inline Color operator*(double v,const Color &color)
+inline AColor operator*(double v,const AColor &color)
 {
-	return Color(color.a_ * v,
+	return AColor(color.a_ * v,
 				 color.r_ * v,
 				 color.g_ * v,
 				 color.b_ * v);
 }
 
-inline Color operator/(const Color &color,double v)
+inline AColor operator/(const AColor &color,double v)
 {
-	return Color(color.a_ / v,
+	return AColor(color.a_ / v,
 				 color.r_ / v,
 				 color.g_ / v,
 				 color.b_ / v);
 }
 
-inline Color operator/(double v,const Color &color)
+inline AColor operator/(double v,const AColor &color)
 {
-	return Color(color.a_ / v,
+	return AColor(color.a_ / v,
 				 color.r_ / v,
 				 color.g_ / v,
 				 color.b_ / v);
 }
 
-inline Color operator+(const Color &color1,const Color &color2)
+inline AColor operator+(const AColor &color1,const AColor &color2)
 {
-	return Color(color1.a_ + color2.a_,
+	return AColor(color1.a_ + color2.a_,
 				 color1.r_ + color2.r_,
 				 color1.g_ + color2.g_,
 				 color1.b_ + color2.b_);
 }
 
-inline Color operator-(const Color &color1,const Color &color2)
+inline AColor operator-(const AColor &color1,const AColor &color2)
 {
-	return Color(color1.a_ - color2.a_,
+	return AColor(color1.a_ - color2.a_,
 				 color1.r_ - color2.r_,
 				 color1.g_ - color2.g_,
 				 color1.b_ - color2.b_);
@@ -67,11 +74,11 @@ inline Color operator-(const Color &color1,const Color &color2)
 class Vector2
 {
 public:
-	Vector2(float nx,float ny,Color nc):x(nx),y(ny),color(nc){}
+	Vector2(float nx,float ny,AColor nc):x(nx),y(ny),color(nc){}
 	bool operator==(const Vector2 &v)const{return x==v.x&&y==v.y;}
 	Vector2 operator-(const Vector2 &v)const{return Vector2(x-v.x,y-v.y,color-v.color);}
 	Vector2 operator+(const Vector2 &v)const{return Vector2(x+v.x,y+v.y,color+v.color);}
-	Color color;
+	AColor color;
 	float x;
 	float y;
 };

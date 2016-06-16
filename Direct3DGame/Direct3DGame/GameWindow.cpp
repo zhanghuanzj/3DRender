@@ -160,30 +160,40 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 
 void cube_init()
 {        
-	int cube_vertex[8][3] = { 
-		{-1,-1,-1},{-1,1,-1},{1,-1,-1},{1,1,-1},
-		{-1,-1,1},{-1,1,1},{1,-1,1},{1,1,1}
+	int cube_vertex[24][3] = { 
+		{-1,1,-1},{-1,-1,-1},{1,-1,-1},{1,1,-1},
+		{1,1,-1},{1,-1,-1},{1,-1,1},{1,1,1},
+		{1,1,1},{1,-1,1},{-1,-1,1},{-1,1,1},
+		{-1,1,1},{-1,-1,1},{-1,-1,-1},{-1,1,-1},
+		{-1,1,1},{-1,1,-1},{1,1,-1},{1,1,1},
+		{-1,-1,-1},{-1,-1,1},{1,-1,1},{1,-1,-1}
 	};
 
-	int colors[8][3] = {
+	int colors[24][3] = {
 		{255,0,0},{0,255,0},{0,0,255},
+		{55,255,0},{45,0,255},{255,0,55},
+		{255,0,0},{0,255,0},{255,0,0},
+		{0,255,0},{0,0,255},
+		{55,255,0},{45,0,255},{255,0,55},
+		{255,0,0},{0,255,0},{255,0,0},{0,255,0},{0,0,255},
 		{55,255,0},{45,0,255},{255,0,55},
 		{255,0,0},{0,255,0}
 	};
 
-	//int colors[8][3] = {
-	//	{255,0,0},{255,0,0},{255,0,0},
-	//	{255,0,0},{255,0,0},{255,0,0},
-	//	{255,0,0},{255,0,0}
-	//};
+	int uv[4][2] = {
+		{0,0},{0,1},{1,1},{1,0},
+	};
 
-	for (int i=0;i<8;++i)
+	string path = "pal5q.jpg";
+	//string path = "Naruto.bmp";
+	model.texture_ = new Texture(path);
+	for (int i=0;i<24;++i)
 	{
 		Vector3 v(cube_vertex[i][0],cube_vertex[i][1],cube_vertex[i][2]);
-		Color color(0,colors[i][0],colors[i][1],colors[i][2]);
-		Vertex vertex(v,color);
+		AColor color(0,colors[i][0],colors[i][1],colors[i][2]);
+		Vertex vertex(v,color,uv[i%4][0],uv[i%4][1]);
 		model.local_vertexes_.push_back(vertex);
-		model.trans_vertexes_.push_back(Vertex(v+model.world_position_,color));
+		model.trans_vertexes_.push_back(Vertex(v+model.world_position_,color,uv[i%4][0],uv[i%4][1]));
 	}
 
 	Matrix model_move_matrix;
@@ -206,7 +216,7 @@ void cube_init()
 	}
 
 	Matrix model_rotate_matrix;
-	model_rotate_matrix.setRotate(Vector3(0,1,0),199);
+	model_rotate_matrix.setRotate(Vector3(0,1,0),60);
 	//4.1.4 转换到世界坐标系
 	int index = 0;
 	for (auto &v : model.local_vertexes_)
@@ -214,18 +224,18 @@ void cube_init()
 		v.position_ = v.position_*model_rotate_matrix;
 		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
 	}
-	model.poly_indices_.push_back(TrangleIndex(0,2,3));
-	model.poly_indices_.push_back(TrangleIndex(3,1,0));  //front
-	model.poly_indices_.push_back(TrangleIndex(7,3,2));
-	model.poly_indices_.push_back(TrangleIndex(2,6,7));  //right
-	model.poly_indices_.push_back(TrangleIndex(6,4,5));
-	model.poly_indices_.push_back(TrangleIndex(5,7,6));  //back
-	model.poly_indices_.push_back(TrangleIndex(1,5,4));
-	model.poly_indices_.push_back(TrangleIndex(4,0,1));  //left
-	model.poly_indices_.push_back(TrangleIndex(1,3,7));
-	model.poly_indices_.push_back(TrangleIndex(7,5,1));  //top
-	model.poly_indices_.push_back(TrangleIndex(2,0,4));
-	model.poly_indices_.push_back(TrangleIndex(4,6,2));  //button
+	model.poly_indices_.push_back(TrangleIndex(0,1,2));
+	model.poly_indices_.push_back(TrangleIndex(2,3,0));  //front
+	model.poly_indices_.push_back(TrangleIndex(4,5,6));
+	model.poly_indices_.push_back(TrangleIndex(6,7,4));  //right
+	model.poly_indices_.push_back(TrangleIndex(8,9,10));
+	model.poly_indices_.push_back(TrangleIndex(10,11,8));  //back
+	model.poly_indices_.push_back(TrangleIndex(12,13,14));
+	model.poly_indices_.push_back(TrangleIndex(14,15,12));  //left
+	model.poly_indices_.push_back(TrangleIndex(16,17,18));
+	model.poly_indices_.push_back(TrangleIndex(18,19,16));  //top
+	model.poly_indices_.push_back(TrangleIndex(20,21,22));
+	model.poly_indices_.push_back(TrangleIndex(22,23,20));  //button
 }
 
 /************************************************************************/
@@ -233,7 +243,14 @@ void cube_init()
 /************************************************************************/
 void draw_pixel()
 {
-	g_directX.drawPixel(300,300,Color(0,255,0,0));
+	//g_directX.drawPixel(300,300,AColor(0,255,0,0));
+	for (int i=0;i<700;++i)
+	{
+		for (int j=0;j<400;++j)
+		{
+			g_directX.drawPixel(i,j,model.texture_->get_color2(i,j));
+		}
+	}
 }
 
 /************************************************************************/
@@ -257,7 +274,7 @@ void draw_line()
 			double v = sqrt(pow(i-350,2)+pow(j-350,2))-200;
 			if ( v>=0&&v < 2)
 			{
-				g_directX.drawLine(350,350,i,j,Color(0,255,0,0));
+				g_directX.drawLine(350,350,i,j,AColor(0,255,0,0));
 			}
 		}
 	}
@@ -445,6 +462,7 @@ void GameUpdate(HWND hwnd)
 	g_directX.fillSurface();
 	g_directX.lockSurface();
 
+	//draw_pixel();
 	draw_cube();
 	//draw_triangle();
 	g_directX.unlockSurface();

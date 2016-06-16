@@ -68,7 +68,7 @@ void DirectX::unlockSurface()
 	// 解锁
 	pD3DSurface->UnlockRect();
 }
-void DirectX::drawPixel(int x,int y, Color color)
+void DirectX::drawPixel(int x,int y, AColor color)
 {
 	/* 像素着色
 	Pointer to the locked bits. 
@@ -84,7 +84,7 @@ void DirectX::drawPixel(int x,int y, Color color)
  * 隐式方程f(x,y)=(y0-y1)x+(x1-x0)y+x0y1-x1y0=0
  */
 /************************************************************************/
-void DirectX::drawLine(int x1,int y1,int x2,int y2,Color color)
+void DirectX::drawLine(int x1,int y1,int x2,int y2,AColor color)
 {
 	int dx = abs(x2 - x1);
 	int dy = abs(y2 - y1);
@@ -135,18 +135,18 @@ void DirectX::drawLine(int x1,int y1,int x2,int y2,Color color)
 /************************************************************************/
 /* 对三角形顶点以y从小到大排序                                            */
 /************************************************************************/
-void DirectX::sortTriangleVector2( Vector2 &v1, Vector2 &v2, Vector2 &v3)
+void DirectX::sortTriangleVector2( Vertex &v1, Vertex &v2, Vertex &v3)
 {
-	if (v1.y>v2.y)
+	if (v1.position_.y_>v2.position_.y_)
 	{
 		swap(v1,v2);
 	}
-	if (v3.y<v1.y)
+	if (v3.position_.y_<v1.position_.y_)
 	{
 		swap(v1,v3);
 		swap(v2,v3);
 	}
-	else if(v3.y<v2.y)
+	else if(v3.position_.y_<v2.position_.y_)
 	{
 		swap(v2,v3);
 	}
@@ -155,58 +155,51 @@ void DirectX::sortTriangleVector2( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 /************************************************************************/
 /* 绘制插值（颜色变化）直线                                               */
 /************************************************************************/
-void DirectX::drawScanLine( Vector2 &v1, Vector2 &v2)
+void DirectX::drawScanLine( Vertex &v1, Vertex &v2)
 {
-	if (v1.x>v2.x)
+	if (v1.position_.x_>v2.position_.x_)
 	{
 		swap(v1,v2);
 	}
-	int x_start = v1.x-2;
-	int x_end = v2.x;
-	Color color = v1.color;
-	Color d_color = v2.color-v1.color;
+	int x_start = v1.position_.x_+0.5;
+	int x_end = v2.position_.x_+0.5;
 	bool isZero = x_end-x_start?false:true;
-	float x = v1.x;
-	float dx = (v2.x-v1.x)/(x_end-x_start);
-	for (int i=x_start;i<=x_end;++i,x+=dx)
+
+	for (int i=x_start;i<=x_end;++i)
 	{
 		float factor = 0;
 		if (!isZero)
 		{
-			factor = (float(x-v1.x))/(v2.x-v1.x);
+			factor = (float(i-x_start))/(x_end-x_start);
 		}
-		drawPixel(i,v1.y,color);
-		color = v1.color + d_color*factor; 
+		Vertex v = v1.interp(v2,factor);
+		drawPixel(i,v.position_.y_,p_texture->get_color(v.u_,v.v_));
+		//drawPixel(i,v.position_.y_,v.color_);
 	}
 }
 /************************************************************************/
 /* 绘制底平三角形	 v1为上顶点	(v2左下，v3右下)		
 */
 /************************************************************************/
-void DirectX::drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3)
+void DirectX::drawTriangleBottomFlat( Vertex &v1, Vertex &v2, Vertex &v3)
 {
-	if (v2.x>v3.x)
+	if (v2.position_.x_>v3.position_.x_)
 	{
 		swap(v2,v3);
 	}
-	int startY = v1.y;
-	int endY = v2.y;
-	float LX = v1.x,RX = v1.x;
-	Color d_left_color = v2.color-v1.color;
-	Color d_right_color = v3.color-v1.color;
-	for (int y=startY;y<=endY;++y)
+	int startY = v1.position_.y_+0.5;
+	int endY = v2.position_.y_+0.5;
+	for (int y=startY;y<endY;y++)
 	{
 		float factor = 0;
 		if (startY-endY!=0)
 		{
-			factor = (float(y-startY))/(endY-startY);
+			//factor = (float(float(y)-startY))/(endY-startY);
+			factor = (float(float(y)+0.5-v1.position_.y_))/(v2.position_.y_-v1.position_.y_);
 		}
-		LX = v1.x+(v2.x-v1.x)*factor;
-		RX = v1.x+(v3.x-v1.x)*factor;
-		Color  co = d_left_color*factor;
-		Color left_color = v1.color + d_left_color*factor;
-		Color right_color = v1.color + d_right_color*factor;
-		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
+		Vertex vl = v1.interp(v2,factor);
+		Vertex vr = v1.interp(v3,factor);
+		drawScanLine(vl,vr);
 	}
 }
 
@@ -214,68 +207,68 @@ void DirectX::drawTriangleBottomFlat( Vector2 &v1, Vector2 &v2, Vector2 &v3)
 /* 绘制顶平三角形		v3为底顶点	(v1左上，v2右上)		
 */
 /************************************************************************/
-void DirectX::drawTriangleTopFlat(Vector2 &v1, Vector2 &v2, Vector2 &v3)
+void DirectX::drawTriangleTopFlat(Vertex &v1, Vertex &v2, Vertex &v3)
 {
-	if (v1.x>v2.x)
+	if (v1.position_.x_>v2.position_.x_)
 	{
 		swap(v1,v2);
 	}
-	int startY = v3.y;
-	int endY = v2.y;
-	float LX = v3.x,RX = v3.x;
-	for (int y=startY;y>=endY;--y)
+	int startY = v2.position_.y_+0.5;
+	int endY = v3.position_.y_+0.5;
+	for (int y=startY;y<endY;y++)
 	{
 		float factor =0;
 		if (startY-endY!=0)
 		{
-			factor = (float(startY-y))/(startY-endY);
+			//factor = (float(float(y)-startY))/(endY-startY);
+			factor = (float(float(y)+0.5-v2.position_.y_))/(v3.position_.y_-v2.position_.y_);
 		}
-		LX = v3.x+(v1.x-v3.x)*factor;	
-		RX = v3.x+(v2.x-v3.x)*factor;
-		Color left_color = v3.color + (v1.color-v3.color)*factor;
-		Color right_color = v3.color + (v2.color-v3.color)*factor;
-		drawScanLine(Vector2(LX,y,left_color),Vector2(RX,y,right_color));
+		Vertex vl = v1.interp(v3,factor);
+		Vertex vr = v2.interp(v3,factor);
+		drawScanLine(vl,vr);
 	}
 }
 
-void DirectX::drawTriangle( Vector2 &v1, Vector2 &v2, Vector2 &v3)
+void DirectX::drawTriangle( Vertex &v1, Vertex &v2, Vertex &v3)
 {
 	sortTriangleVector2(v1,v2,v3);
-	if (v1==v2&&v2==v3)
+	if (v1.isxy_same(v2)&&v2.isxy_same(v3))
 	{
-		drawPixel(v1.x,v2.x,v1.color);
+		drawPixel(v1.position_.x_,v1.position_.y_,v1.color_);
 	}
-	else if (v1==v2)
+	else if (v1.isxy_same(v2))
 	{
-		drawLine(v1.x,v1.y,v3.x,v3.y,v1.color);
+		drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,v1.color_);
 	}
-	else if(v1==v3)
+	else if(v1.isxy_same(v3))
 	{
-		 drawLine(v1.x,v1.y,v2.x,v2.y,v1.color);
+		drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,v1.color_);
 	}
-	else if (v2==v3)
+	else if (v2.isxy_same(v3))
 	{
-		drawLine(v1.x,v1.y,v3.x,v3.y,v1.color);
+		drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,v1.color_);
 	}
 	else
 	{
-		if (v1.y==v2.y)
+		if (v1.position_.y_==v2.position_.y_)
 		{
 			drawTriangleTopFlat(v1,v2,v3);
 		}
-		else if (v2.y==v3.y)
+		else if (v2.position_.y_==v3.position_.y_)
 		{
 			drawTriangleBottomFlat(v1,v2,v3);
 		}
 		else
 		{
-			Color color = v3.color + (v1.color-v3.color)*(v2.y-v3.y)/(v1.y-v3.y);
-			Vector2 v4(v1.x+(float(v2.y-v1.y)/(v3.y-v1.y))*(v3.x-v1.x),v2.y,color);
+			float factor = (v2.position_.y_-v3.position_.y_)/(v1.position_.y_-v3.position_.y_);
+			Vertex v4 = v3.interp(v1,factor);
 			drawTriangleBottomFlat(v1,v2,v4);
 			drawTriangleTopFlat(v2,v4,v3);
 		}
 	}
 }
+
+
 
 bool is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index)
 {
@@ -291,6 +284,7 @@ bool is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index)
 
 void DirectX::draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index)
 {
+
 	int index = 0;
 	for (int index=0;index<model.poly_indices_.size();++index)
 	{
@@ -302,14 +296,15 @@ void DirectX::draw_wireframe_model(Model& model,const set<int> &remove_vertex_in
 		Vertex v1 = model.trans_vertexes_[model.poly_indices_[index].indices[0]];
 		Vertex v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
 		Vertex v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
-		drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
-		drawLine(v3.position_.x_,v3.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
-		drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,Color(0,255,0,0));
+		drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,AColor(0,255,0,0));
+		drawLine(v3.position_.x_,v3.position_.y_,v2.position_.x_,v2.position_.y_,AColor(0,255,0,0));
+		drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,AColor(0,255,0,0));
 	}
 }
 
 void DirectX::draw_mesh_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index)
 {
+	p_texture = model.texture_;
 	int index = 0;
 	for (int index=0;index<model.poly_indices_.size();++index)
 	{
@@ -322,7 +317,7 @@ void DirectX::draw_mesh_model(Model& model,const set<int> &remove_vertex_index,c
 		Vertex v2 = model.trans_vertexes_[model.poly_indices_[index].indices[1]];
 		Vertex v3 = model.trans_vertexes_[model.poly_indices_[index].indices[2]];
 		
-		drawTriangle(v1.to_vector2(),v2.to_vector2(),v3.to_vector2());
+		drawTriangle(v1,v2,v3);
 		//drawLine(v1.position_.x_,v1.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
 		//drawLine(v3.position_.x_,v3.position_.y_,v2.position_.x_,v2.position_.y_,Color(0,255,0,0));
 		//drawLine(v1.position_.x_,v1.position_.y_,v3.position_.x_,v3.position_.y_,Color(0,255,0,0));

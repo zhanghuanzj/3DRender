@@ -15,6 +15,8 @@ public:
 		float a = x_-v.x_;
 		return Vector3(x_-v.x_ , y_-v.y_ , z_-v.z_);
 	}
+	Vector3 interp(const Vector3 &v,float factor);
+
 	float x_;
 	float y_;
 	float z_;
@@ -45,4 +47,6 @@ inline Vector3 cross_product(const Vector3 &v1,const Vector3 &v2)
 {
 	return Vector3(v1.y_*v2.z_ - v1.z_*v2.y_, v1.z_*v2.x_ - v1.x_*v2.z_ , v1.x_*v2.y_-v1.y_*v2.x_);
 }
+
+
 #endif

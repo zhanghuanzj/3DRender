@@ -2,6 +2,7 @@
 #define MODEL_H_
 #include <vector>
 #include "Vector3.h"
+#include "Texture.h"
 using namespace std;
 
 class TrangleIndex
@@ -15,11 +16,12 @@ public:
 class Model
 {
 public:
-	Model(Vector3 position):world_position_(position){}
+	Model(Vector3 position):world_position_(position),texture_(nullptr){}
 
 	Vector3 world_position_;
 	vector<Vertex> local_vertexes_;
 	vector<Vertex> trans_vertexes_;
 	vector<TrangleIndex> poly_indices_;
+	Texture *texture_;
 };
 #endif

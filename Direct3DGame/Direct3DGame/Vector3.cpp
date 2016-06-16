@@ -10,3 +10,12 @@ void Vector3::normalize() {
 	y_ *= factor;
 	z_ *= factor;
 }
+
+Vector3 Vector3::interp(const Vector3 &v,float factor)
+{
+	float x = x_+(v.x_-x_)*factor;
+	float y = y_+(v.y_-y_)*factor;
+	float z = z_+(v.z_-z_)*factor;
+	float w = w_+(v.w_-w_)*factor;
+	return Vector3(x,y,z,w);
+}
