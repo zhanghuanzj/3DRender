@@ -22,6 +22,8 @@ public:
 	void view_transform(vector<Vertex> &vertexes);
 	int transform_check_cvv(const Vector3 &v);
 	bool is_back(const Vector3 &v1,const Vector3 &v2,const Vector3 &v3);
+	float get_far()const{return far_;}
+	float get_near()const{return near_;}
 
 private:
 	Camera():world_position_(),look_at_theta_(Vector3(0,0,0)),angle_(90),near_(1),far_(10000){}

@@ -16,6 +16,7 @@ public:
 	Vector3 position_;
 	AColor color_;
 	float u_,v_;
+	float rhw;
 };
 
 

@@ -29,7 +29,7 @@ Texture::Texture(string path)
 
 AColor Texture::get_color(float u,float v)
 {
-	return pixels[(width-1)*u][(height-1)*v];
+	return pixels[(int)((width-1)*u)][(int)((height-1)*v)];
 }
 
 AColor Texture::get_color2(int u,int v)

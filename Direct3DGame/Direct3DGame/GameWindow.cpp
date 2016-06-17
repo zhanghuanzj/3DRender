@@ -6,6 +6,7 @@
 #include "Math.h"
 #include "Matrix.h"
 #include "Vertex.h"
+#include "Enum.h"
 #include <WindowsX.h>
 
 using namespace std;
@@ -39,13 +40,8 @@ void transform_attribute_init()
 	g_camera.rotateX = g_camera.rotateY = 0.0f;
 }
 
-enum State
-{
-	MODEL_TRANSFORM,
-	CAMERA_TRANSFORM
-};
-
 State g_game_state = MODEL_TRANSFORM;
+RenderState g_render_state = TEXTURE;
 const float g_rotate_theta = 3.5;
 LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 {
@@ -70,6 +66,23 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 			else
 			{
 				g_game_state = MODEL_TRANSFORM;
+			}
+		}
+		else if (wparam==VK_TAB)
+		{
+			switch (g_render_state)
+			{
+			case WIREFRAME:
+				g_render_state = TEXTURE;
+				break;
+			case TEXTURE:
+				g_render_state = COLOR;
+				break;
+			case COLOR:
+				g_render_state = WIREFRAME;
+				break;
+			default:
+				break;
 			}
 		}
 		switch (g_game_state)
@@ -171,21 +184,21 @@ void cube_init()
 
 	int colors[24][3] = {
 		{255,0,0},{0,255,0},{0,0,255},
-		{55,255,0},{45,0,255},{255,0,55},
-		{255,0,0},{0,255,0},{255,0,0},
-		{0,255,0},{0,0,255},
-		{55,255,0},{45,0,255},{255,0,55},
-		{255,0,0},{0,255,0},{255,0,0},{0,255,0},{0,0,255},
-		{55,255,0},{45,0,255},{255,0,55},
-		{255,0,0},{0,255,0}
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
+		{255,0,0},{0,255,0},{0,0,255},
 	};
 
 	int uv[4][2] = {
 		{0,0},{0,1},{1,1},{1,0},
 	};
 
-	string path = "pal5q.jpg";
-	//string path = "Naruto.bmp";
+	//string path = "pal5q.jpg";
+	string path = "Naruto.bmp";
 	model.texture_ = new Texture(path);
 	for (int i=0;i<24;++i)
 	{
@@ -308,7 +321,7 @@ void draw_triangle()
 /************************************************************************/
 /*4.画正方体                                                            */
 /************************************************************************/
-void draw_cube()
+void draw_cube(RenderState renderState)
 {
 	/************************************************************************/
 	/* 4.1.世界变换                                                           */
@@ -378,14 +391,13 @@ void draw_cube()
 	}
 	camera.canonicalview_volume(model.trans_vertexes_);
 
-
-
 	// 4.3.3 透视除法
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
 		model.trans_vertexes_[i].position_.x_ = model.trans_vertexes_[i].position_.x_/model.trans_vertexes_[i].position_.w_; 
 		model.trans_vertexes_[i].position_.y_ = model.trans_vertexes_[i].position_.y_/model.trans_vertexes_[i].position_.w_; 
 		model.trans_vertexes_[i].position_.z_ = model.trans_vertexes_[i].position_.z_/model.trans_vertexes_[i].position_.w_; 
+		model.trans_vertexes_[i].position_.w_ = 1/model.trans_vertexes_[i].position_.w_;
 	}
 	set<int> remove_vertex_index;
 	// 4.3.4 记录剔除点
@@ -410,8 +422,24 @@ void draw_cube()
 	}
 
 	//绘制线框模型
-	//g_directX.draw_wireframe_model(model,remove_vertex_index,remove_triangle_index);
-	g_directX.draw_mesh_model(model,remove_vertex_index,remove_triangle_index);
+	switch (renderState)
+	{
+	case WIREFRAME:
+		g_directX.draw_wireframe_model(model,remove_vertex_index,remove_triangle_index);
+		break;
+	case TEXTURE:
+		g_directX.set_render_state(TEXTURE);
+		g_directX.draw_mesh_model(model,remove_vertex_index,remove_triangle_index);
+		break;
+	case COLOR:
+		g_directX.set_render_state(COLOR);
+		g_directX.draw_mesh_model(model,remove_vertex_index,remove_triangle_index);
+		break;
+	default:
+		break;
+	}
+	
+	
 
 }
 
@@ -463,7 +491,7 @@ void GameUpdate(HWND hwnd)
 	g_directX.lockSurface();
 
 	//draw_pixel();
-	draw_cube();
+	draw_cube(g_render_state);
 	//draw_triangle();
 	g_directX.unlockSurface();
 	//Sleep(1000);

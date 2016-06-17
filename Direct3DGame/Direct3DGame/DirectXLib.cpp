@@ -39,21 +39,30 @@ bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int heig
 	//4.创建设备
 	d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pD3DXDevice);
 	d3d9->Release();
-
+	//创建一个绘制表面
 	pD3DXDevice->CreateOffscreenPlainSurface(width, height, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pD3DSurface, 0);
 	
 
-	//保存屏幕宽，高
+	//保存屏幕宽、高、Z缓冲区大小
 	width_ = width;
 	height_ = height;
+	buffer_size_ = width_*height_;
 
+	//z_buffer开辟空间
+	z_buffer_ = new float[buffer_size_];
 	return true;
 }
 
+/************************************************************************/
+/* 屏幕填充刷新，Z缓冲初始化
+*/
+/************************************************************************/
 void DirectX::fillSurface()
 {
 	pD3DXDevice->ColorFill(pD3DSurface,NULL,D3DCOLOR_XRGB(0,0,0));
+	fill(z_buffer_,z_buffer_+buffer_size_,FLT_MAX);
 }
+
 void DirectX::lockSurface()
 {
 	// 创建并初始化锁定区域
@@ -68,14 +77,19 @@ void DirectX::unlockSurface()
 	// 解锁
 	pD3DSurface->UnlockRect();
 }
-void DirectX::drawPixel(int x,int y, AColor color)
+
+void DirectX::drawPixel(int x,int y, AColor color,float depth)
 {
 	/* 像素着色
-	Pointer to the locked bits. 
-	If a RECT was provided to the LockRect call, 
+	Pointer to the locked bits. If a RECT was provided to the LockRect call, 
 	pBits will be appropriately offset from the start of the surface.*/
-	DWORD* pBits = (DWORD*)LockRect.pBits;
-	pBits[x + y * (LockRect.Pitch >> 2)] = ARGB( color.a_ , color.r_ , color.g_ , color.b_ );      
+	int index = x*(width_)+y;
+	if (z_buffer_[index]>depth)
+	{
+		DWORD* pBits = (DWORD*)LockRect.pBits;
+		pBits[x + y * (LockRect.Pitch >> 2)] = ARGB( color.a_ , color.r_ , color.g_ , color.b_ ); 
+		z_buffer_[index] = depth;
+	}
 
 }
 
@@ -141,17 +155,15 @@ void DirectX::sortTriangleVector2( Vertex &v1, Vertex &v2, Vertex &v3)
 	{
 		swap(v1,v2);
 	}
-	if (v3.position_.y_<v1.position_.y_)
+	if(v3.position_.y_<v2.position_.y_)
 	{
-		swap(v1,v3);
 		swap(v2,v3);
 	}
-	else if(v3.position_.y_<v2.position_.y_)
+	if (v1.position_.y_>v2.position_.y_)
 	{
-		swap(v2,v3);
+		swap(v1,v2);
 	}
 }
-
 /************************************************************************/
 /* 绘制插值（颜色变化）直线                                               */
 /************************************************************************/
@@ -173,8 +185,15 @@ void DirectX::drawScanLine( Vertex &v1, Vertex &v2)
 			factor = (float(i-x_start))/(x_end-x_start);
 		}
 		Vertex v = v1.interp(v2,factor);
-		drawPixel(i,v.position_.y_,p_texture->get_color(v.u_,v.v_));
-		//drawPixel(i,v.position_.y_,v.color_);
+		if (render_state_==TEXTURE)
+		{
+			drawPixel(i,v.position_.y_,p_texture->get_color(v.u_,v.v_),1/v.position_.w_);
+		}
+		else
+		{
+			drawPixel(i,v.position_.y_,v.color_,1/v.position_.w_);
+		}
+		
 	}
 }
 /************************************************************************/
@@ -194,11 +213,11 @@ void DirectX::drawTriangleBottomFlat( Vertex &v1, Vertex &v2, Vertex &v3)
 		float factor = 0;
 		if (startY-endY!=0)
 		{
-			//factor = (float(float(y)-startY))/(endY-startY);
 			factor = (float(float(y)+0.5-v1.position_.y_))/(v2.position_.y_-v1.position_.y_);
 		}
 		Vertex vl = v1.interp(v2,factor);
 		Vertex vr = v1.interp(v3,factor);
+		
 		drawScanLine(vl,vr);
 	}
 }
@@ -220,7 +239,6 @@ void DirectX::drawTriangleTopFlat(Vertex &v1, Vertex &v2, Vertex &v3)
 		float factor =0;
 		if (startY-endY!=0)
 		{
-			//factor = (float(float(y)-startY))/(endY-startY);
 			factor = (float(float(y)+0.5-v2.position_.y_))/(v3.position_.y_-v2.position_.y_);
 		}
 		Vertex vl = v1.interp(v3,factor);
@@ -229,6 +247,10 @@ void DirectX::drawTriangleTopFlat(Vertex &v1, Vertex &v2, Vertex &v3)
 	}
 }
 
+/************************************************************************/
+/* 绘制三角形
+*/
+/************************************************************************/
 void DirectX::drawTriangle( Vertex &v1, Vertex &v2, Vertex &v3)
 {
 	sortTriangleVector2(v1,v2,v3);
@@ -260,17 +282,15 @@ void DirectX::drawTriangle( Vertex &v1, Vertex &v2, Vertex &v3)
 		}
 		else
 		{
-			float factor = (v2.position_.y_-v3.position_.y_)/(v1.position_.y_-v3.position_.y_);
-			Vertex v4 = v3.interp(v1,factor);
+			float factor = (v2.position_.y_-v1.position_.y_)/(v3.position_.y_-v1.position_.y_);
+			Vertex v4 = v1.interp(v3,factor);
 			drawTriangleBottomFlat(v1,v2,v4);
 			drawTriangleTopFlat(v2,v4,v3);
 		}
 	}
 }
 
-
-
-bool is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index)
+bool DirectX::is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index)
 {
 	for (auto i : triangle.indices)
 	{

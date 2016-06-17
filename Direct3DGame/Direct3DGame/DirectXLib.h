@@ -6,9 +6,12 @@
 #include <windows.h>
 #include <iostream>
 #include <set>
+#include <vector>
 #include "Math.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Debug.h"
+#include "Enum.h"
 
 using namespace std;
 
@@ -28,7 +31,7 @@ public:
 	void lockSurface();
 	void unlockSurface();
 	//绘制像素到缓冲区
-	void drawPixel(int x,int y,AColor color);
+	void drawPixel(int x,int y,AColor color,float depth=0.0f);
 
 	//缓冲区翻转显示
 	void flipSurface();
@@ -53,20 +56,27 @@ public:
 	//获取缓冲区
 	IDirect3DSurface9* getSurface();
 
+	//设置渲染模式
+	void set_render_state(RenderState render_sate){render_state_=render_sate;}
+
 	DWORD ARGB(int a,int r,int g,int b){return DWORD((a<<24)+(r<<16)+(g<<8)+b);}
 	//析构
 	~DirectX();
 	D3DLOCKED_RECT LockRect;
 private:
-	DirectX():pD3DXDevice(nullptr),pD3DSurface(nullptr),camera(Camera::instance()){}
+	DirectX():pD3DXDevice(nullptr),pD3DSurface(nullptr),camera(Camera::instance()),render_state_(TEXTURE){}
+	bool is_out(TrangleIndex &triangle,const set<int> &remove_vertex_index);
+
 	IDirect3DDevice9* pD3DXDevice;
 	IDirect3DSurface9* pD3DSurface;
 	Camera &camera;
+	Texture *p_texture;
+	float *z_buffer_;
 	int width_;
 	int height_;
-	Texture *p_texture;
-	 
-
+	int buffer_size_;
+	RenderState render_state_;
+	
 };
 
 
