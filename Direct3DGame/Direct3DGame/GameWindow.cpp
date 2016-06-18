@@ -43,6 +43,14 @@ void transform_attribute_init()
 State g_game_state = MODEL_TRANSFORM;
 RenderState g_render_state = TEXTURE;
 const float g_rotate_theta = 3.5;
+//Vector3 light_vector(-1,1,-1);
+#define l0 1.5f
+#define l1 0.0f
+#define l2 0.3f
+Vector3 light_vector(-1,1,0);
+Vector3 diffuse_light(l0,l0,l0,l0);
+Vector3 specular_light(l1,l1,l1,l1);
+Vector3 ambient_light(l2,l2,l2);
 LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -197,8 +205,8 @@ void cube_init()
 		{0,0},{0,1},{1,1},{1,0},
 	};
 
-	//string path = "pal5q.jpg";
-	string path = "Naruto.bmp";
+	string path = "pal5q.jpg";
+	//string path = "Naruto.bmp";
 	model.texture_ = new Texture(path);
 	for (int i=0;i<24;++i)
 	{
@@ -225,7 +233,8 @@ void cube_init()
 	for (auto &v : model.local_vertexes_)
 	{
 		v.position_ = v.position_*matrix;
-		model.trans_vertexes_[index2++].position_ = v.position_+model.world_position_;
+		model.trans_vertexes_[index2].position_ = v.position_+model.world_position_;
+		model.trans_vertexes_[index2++].normal_ = v.normal_;
 	}
 
 	Matrix model_rotate_matrix;
@@ -344,14 +353,6 @@ void draw_cube(RenderState renderState)
 
 	Matrix model_transform = model_rotate_matrix*model_scale_matrix;
 
-	//4.1.4 转换到世界坐标系
-	int index = 0;
-	for (auto &v : model.local_vertexes_)
-	{
-		v.position_ = v.position_*model_transform;
-		model.trans_vertexes_[index++].position_ = v.position_+model.world_position_;
-	}
-
 
 	/************************************************************************/
 	/* 4.2  取景变换(相机空间)                                                         */
@@ -366,6 +367,45 @@ void draw_cube(RenderState renderState)
 	//4.2.2 相机旋转
 	camera.set_lookAt(Vector3(g_camera.rotateX,g_camera.rotateY,0));
 	camera.set_position(camera_move_matrix);
+	
+	//4.1.4 转换到世界坐标系
+	int index = 0;
+	for (auto &v : model.local_vertexes_)
+	{
+		v.position_ = v.position_*model_transform;
+		model.trans_vertexes_[index].position_ = v.position_+model.world_position_;
+		
+		//顶点法向量处理
+		//(1)flat着色
+		int base = index-index%4;
+		Debug::instance()<<"Index:"<<index<<endl;
+		Debug::instance()<<"Base:"<<base<<endl;
+		Debug::instance()<<base+(index-1+4)%4<<" "<<base+(index+1+4)%4<<endl;
+		Vector3 vl = model.local_vertexes_[base+(index-1+4)%4].position_ - model.local_vertexes_[index].position_;
+		Vector3 vr = model.local_vertexes_[base+(index+1+4)%4].position_ -model.local_vertexes_[index].position_;
+		model.trans_vertexes_[index].set_normal(cross_product(vl,vr)); 
+		//(2)Gourand着色
+		//model.trans_vertexes_[index].set_normal(model.trans_vertexes_[index].position_-model.world_position_); 
+		model.trans_vertexes_[index].normal_.normalize(); 
+	
+		//漫反射&环境光&镜面反射光
+		float diff_cos_theta = max(light_vector*model.trans_vertexes_[index].normal_,0);
+		Debug::instance()<<"cos:"<<diff_cos_theta<<endl;
+		/*Vector3 view_vector = camera.get_position() - model.trans_vertexes_[index].position_;
+		view_vector.normalize();
+		float sepc_cos_theta =max(0,view_vector*(2*(model.trans_vertexes_[index].normal_*light_vector)*model.trans_vertexes_[index].normal_-light_vector));*/
+
+		model.trans_vertexes_[index].light_ = diffuse_light*diff_cos_theta+/*specular_light*sepc_cos_theta+*/ambient_light;
+		++index;
+
+		
+
+	}
+
+
+	
+
+
 	//4.2.3 转换到相机坐标
 	camera.view_transform(model.trans_vertexes_);
 
@@ -482,6 +522,8 @@ HWND GameStart(HINSTANCE hInstance,int nShowCmd,string wcName,string title)
 	//相机初始化
 	Camera &camera = Camera::instance();
 	camera.set_w_h(WIDTH/HEIGHT);
+
+	light_vector.normalize();
 	return hwnd;
 }
 

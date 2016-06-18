@@ -20,6 +20,12 @@ public:
 	{
 		output<<info;
 	}
+	template <typename T>
+	ofstream& operator<<(const T &info)
+	{
+		output<<info;
+		return output;
+	}
 	~Debug(){output.close();}
 private:
 	Debug(string fileName="Debug.txt"){ output.open(fileName);};

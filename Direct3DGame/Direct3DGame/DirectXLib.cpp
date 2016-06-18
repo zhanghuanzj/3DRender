@@ -187,7 +187,8 @@ void DirectX::drawScanLine( Vertex &v1, Vertex &v2)
 		Vertex v = v1.interp(v2,factor);
 		if (render_state_==TEXTURE)
 		{
-			drawPixel(i,v.position_.y_,p_texture->get_color(v.u_,v.v_),1/v.position_.w_);
+			AColor color = p_texture->get_color(v.u_,v.v_)*v.light_;
+			drawPixel(i,v.position_.y_,color,1/v.position_.w_);
 		}
 		else
 		{

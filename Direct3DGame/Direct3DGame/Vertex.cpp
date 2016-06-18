@@ -23,5 +23,9 @@ Vertex Vertex::interp(const Vertex &v,float factor)
 	float tu = u_z/w;
 	float tv = v_z/w;
 	position.w_ = w;
-	return Vertex(position,color,tu,tv);
+	Vertex vertex(position,color,tu,tv);
+	vertex.light_.x_ = light_.x_ + (v.light_.x_ - light_.x_)*factor;
+	vertex.light_.y_ = light_.y_ + (v.light_.y_ - light_.y_)*factor;
+	vertex.light_.z_ = light_.z_ + (v.light_.z_ - light_.z_)*factor;
+	return vertex;
 }

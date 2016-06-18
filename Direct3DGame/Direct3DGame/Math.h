@@ -1,7 +1,7 @@
 #ifndef MATH_H_
 #define MATH_H_
 #include <cmath>
-
+#include "Vector3.h"
 #define PI 3.141592654
 
 class AColor
@@ -69,6 +69,9 @@ inline AColor operator-(const AColor &color1,const AColor &color2)
 				 color1.g_ - color2.g_,
 				 color1.b_ - color2.b_);
 }
+
+AColor operator*(const AColor &color,const Vector3 &v);
+AColor operator*(const Vector3 &v,const AColor &color);
 
 
 class Vector2

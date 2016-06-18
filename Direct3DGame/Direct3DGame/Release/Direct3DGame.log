@@ -1,0 +1,35 @@
+﻿生成启动时间为 2016/6/17 20:54:13。
+     1>项目“C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Direct3DGame\Direct3DGame.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt GameWindow.cpp
+         GameWindow.cpp
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(13): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(14): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(15): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(16): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(30): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(38): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(46): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\Math.h(54): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>GameWindow.cpp(109): warning C4305: “=”: 从“double”到“float”截断
+     1>GameWindow.cpp(113): warning C4305: “=”: 从“double”到“float”截断
+     1>GameWindow.cpp(131): warning C4305: “=”: 从“double”到“float”截断
+     1>GameWindow.cpp(135): warning C4305: “=”: 从“double”到“float”截断
+     1>GameWindow.cpp(139): warning C4305: “=”: 从“double”到“float”截断
+     1>GameWindow.cpp(205): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+     1>GameWindow.cpp(207): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+     1>GameWindow.cpp(209): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+     1>GameWindow.cpp(395): warning C4018: “<”: 有符号/无符号不匹配
+     1>GameWindow.cpp(404): warning C4018: “<”: 有符号/无符号不匹配
+     1>GameWindow.cpp(416): warning C4018: “<”: 有符号/无符号不匹配
+     1>GameWindow.cpp(460): error C2440: “=”: 无法从“const char *”转换为“LPCWSTR”
+                 与指向的类型无关；转换要求 reinterpret_cast、C 样式转换或函数样式转换
+     1>GameWindow.cpp(466): error C2664: “CreateWindowExW”: 不能将参数 2 从“const char *”转换为“LPCWSTR”
+                 与指向的类型无关；转换要求 reinterpret_cast、C 样式转换或函数样式转换
+     1>GameWindow.cpp(505): error C2664: “UnregisterClassW”: 不能将参数 1 从“const char *”转换为“LPCWSTR”
+                 与指向的类型无关；转换要求 reinterpret_cast、C 样式转换或函数样式转换
+     1>已完成生成项目“C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Direct3DGame\Direct3DGame.vcxproj”(Build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:00.83
