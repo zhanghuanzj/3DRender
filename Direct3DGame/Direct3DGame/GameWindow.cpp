@@ -44,7 +44,7 @@ State g_game_state = MODEL_TRANSFORM;
 RenderState g_render_state = TEXTURE;
 const float g_rotate_theta = 3.5;
 //Vector3 light_vector(-1,1,-1);
-#define l0 1.5f
+#define l0 1.0f
 #define l1 0.0f
 #define l2 0.3f
 Vector3 light_vector(-1,1,0);
@@ -114,11 +114,11 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 			}
 			else if (wparam==VK_OEM_PLUS)
 			{
-				g_model.scale = 0.01;
+				g_model.scale = 1.01;
 			}
 			else if (wparam==VK_OEM_MINUS)
 			{
-				g_model.scale = -0.01;
+				g_model.scale = 0.99;
 			}
 			break;
 		case CAMERA_TRANSFORM:
@@ -378,9 +378,9 @@ void draw_cube(RenderState renderState)
 		//顶点法向量处理
 		//(1)flat着色
 		int base = index-index%4;
-		Debug::instance()<<"Index:"<<index<<endl;
+		/*Debug::instance()<<"Index:"<<index<<endl;
 		Debug::instance()<<"Base:"<<base<<endl;
-		Debug::instance()<<base+(index-1+4)%4<<" "<<base+(index+1+4)%4<<endl;
+		Debug::instance()<<base+(index-1+4)%4<<" "<<base+(index+1+4)%4<<endl;*/
 		Vector3 vl = model.local_vertexes_[base+(index-1+4)%4].position_ - model.local_vertexes_[index].position_;
 		Vector3 vr = model.local_vertexes_[base+(index+1+4)%4].position_ -model.local_vertexes_[index].position_;
 		model.trans_vertexes_[index].set_normal(cross_product(vl,vr)); 
@@ -390,16 +390,13 @@ void draw_cube(RenderState renderState)
 	
 		//漫反射&环境光&镜面反射光
 		float diff_cos_theta = max(light_vector*model.trans_vertexes_[index].normal_,0);
-		Debug::instance()<<"cos:"<<diff_cos_theta<<endl;
+		/*Debug::instance()<<"cos:"<<diff_cos_theta<<endl;*/
 		/*Vector3 view_vector = camera.get_position() - model.trans_vertexes_[index].position_;
 		view_vector.normalize();
 		float sepc_cos_theta =max(0,view_vector*(2*(model.trans_vertexes_[index].normal_*light_vector)*model.trans_vertexes_[index].normal_-light_vector));*/
-
 		model.trans_vertexes_[index].light_ = diffuse_light*diff_cos_theta+/*specular_light*sepc_cos_theta+*/ambient_light;
+		model.trans_vertexes_[index].light_.color_adjust();
 		++index;
-
-		
-
 	}
 
 
@@ -452,13 +449,14 @@ void draw_cube(RenderState renderState)
 	/************************************************************************/
 	/* 4.4  窗口变换                                                         */
 	/************************************************************************/
-
+	int half_width = WIDTH/2;
+	int half_height = HEIGHT/2;
 	for (int i=0;i<model.trans_vertexes_.size();++i)
 	{
-		model.trans_vertexes_[i].position_.x_ *= WIDTH/2;
-		model.trans_vertexes_[i].position_.x_ += WIDTH/2;
-		model.trans_vertexes_[i].position_.y_ *= HEIGHT/2;
-		model.trans_vertexes_[i].position_.y_ = HEIGHT/2-model.trans_vertexes_[i].position_.y_;
+		model.trans_vertexes_[i].position_.x_ *= half_width;
+		model.trans_vertexes_[i].position_.x_ += half_width;
+		model.trans_vertexes_[i].position_.y_ *= half_height;
+		model.trans_vertexes_[i].position_.y_ = half_height-model.trans_vertexes_[i].position_.y_;
 	}
 
 	//绘制线框模型

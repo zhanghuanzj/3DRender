@@ -1,5 +1,6 @@
 #include "DirectXLib.h"
 
+int CMID(int x, int min, int max) { return (x < min)? min : ((x > max)? max : x); }
 
 bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int height)
 {
@@ -173,28 +174,54 @@ void DirectX::drawScanLine( Vertex &v1, Vertex &v2)
 	{
 		swap(v1,v2);
 	}
+
+	//换成加法后速度快了好多
 	int x_start = v1.position_.x_+0.5;
 	int x_end = v2.position_.x_+0.5;
 	bool isZero = x_end-x_start?false:true;
+	float df = 1.0f/(x_end-x_start);
+	//depth
+	float dd = (v2.position_.w_-v1.position_.w_)*df;
+	float one_depth = v1.position_.w_;
+	//u,v
+	float w = v1.position_.w_;
+	float dw = (v2.position_.w_-v1.position_.w_)*df;
 
-	for (int i=x_start;i<=x_end;++i)
+	float uw = v1.u_*v1.position_.w_ ;
+	float vw = v1.v_*v1.position_.w_;
+	float duw = (v2.u_*v2.position_.w_-v1.u_*v1.position_.w_)*df;
+	float dvw = (v2.v_*v2.position_.w_-v1.v_*v1.position_.w_)*df;
+
+	//light
+	float r = v1.light_.x_;
+	float dr = (v2.light_.x_-v1.light_.x_)*df;
+	float g = v1.light_.y_;
+	float dg = (v2.light_.y_-v1.light_.y_)*df;
+	float b = v1.light_.z_;
+	float db = (v2.light_.z_-v1.light_.z_)*df;
+	for (int i=x_start;i<x_end;++i)
 	{
-		float factor = 0;
-		if (!isZero)
-		{
-			factor = (float(i-x_start))/(x_end-x_start);
-		}
-		Vertex v = v1.interp(v2,factor);
 		if (render_state_==TEXTURE)
 		{
-			AColor color = p_texture->get_color(v.u_,v.v_)*v.light_;
-			drawPixel(i,v.position_.y_,color,1/v.position_.w_);
+			AColor color = p_texture->get_color(uw/w,vw/w);
+			color.r_ = CMID(color.r_*r,0,255);
+			color.g_ = CMID(color.g_*g,0,255);
+			color.b_ = CMID(color.b_*b,0,255);
+			drawPixel(i,v1.position_.y_,color,1/one_depth);
 		}
 		else
 		{
-			drawPixel(i,v.position_.y_,v.color_,1/v.position_.w_);
+			float factor = min(1.0f,df*(i-x_start));
+			AColor color = v1.color_.interp(v2.color_,factor);
+			drawPixel(i,v1.position_.y_,color,1/one_depth);
 		}
-		
+		one_depth += dd;
+		uw += duw;
+		vw += dvw;
+		w += dw;
+		r += dr;
+		g += dg;
+		b += db;
 	}
 }
 /************************************************************************/

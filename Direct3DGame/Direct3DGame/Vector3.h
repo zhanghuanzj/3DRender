@@ -7,9 +7,11 @@ public:
 	Vector3(float x,float y,float z,float w=1):x_(x),y_(y),z_(z),w_(w){}
 	Vector3():x_(),y_(),z_(),w_(1){}
 	Vector3(const Vector3& v):x_(v.x_),y_(v.y_),z_(v.z_),w_(v.w_){}
+	
 
 	float length(){ return sqrt(x_*x_ +y_*y_+z_*z_);}
 	void normalize();
+	void color_adjust();
 	Vector3 operator+(const Vector3 &v)const { return Vector3(x_+v.x_ , y_+v.y_ , z_+v.z_);}
 	Vector3 operator-(const Vector3 &v)const 
 	{ 

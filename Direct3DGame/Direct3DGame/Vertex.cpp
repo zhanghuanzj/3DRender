@@ -29,3 +29,12 @@ Vertex Vertex::interp(const Vertex &v,float factor)
 	vertex.light_.z_ = light_.z_ + (v.light_.z_ - light_.z_)*factor;
 	return vertex;
 }
+
+void Vertex::interp_u_v(const Vertex &ver,float factor,float &u,float &v)
+{
+	float w = position_.w_+(ver.position_.w_-position_.w_)*factor;
+	float u_z = u_*position_.w_ + (ver.u_*ver.position_.w_-u_*position_.w_)*factor;
+	float v_z = v_*position_.w_ + (ver.v_*ver.position_.w_-v_*position_.w_)*factor;
+	u = u_z/w;
+	v = v_z/w;
+}
