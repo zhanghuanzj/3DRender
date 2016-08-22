@@ -1,4 +1,4 @@
-﻿生成启动时间为 2016/6/18 17:02:09。
+﻿生成启动时间为 2016/7/3 10:12:07。
      1>项目“C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Direct3DGame\Direct3DGame.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt GameWindow.cpp
@@ -19,9 +19,9 @@
      1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(213): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
      1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(215): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
      1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(217): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(435): warning C4018: “<”: 有符号/无符号不匹配
-     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(444): warning C4018: “<”: 有符号/无符号不匹配
-     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(456): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(433): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(442): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\dell\documents\github\3drender\direct3dgame\direct3dgame\gamewindow.cpp(455): warning C4018: “<”: 有符号/无符号不匹配
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Debug\Direct3DGame.exe" /INCREMENTAL /NOLOGO winmm.lib dxerr.lib dxguid.lib d3dx9d.lib d3dx10d.lib d3d9.lib comctl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Debug\Direct3DGame.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Debug\Direct3DGame.lib" /MACHINE:X86 Debug\Camera.obj
          Debug\DirectXLib.obj
@@ -36,4 +36,4 @@
 
 生成成功。
 
-已用时间 00:00:01.62
+已用时间 00:00:01.63

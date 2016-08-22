@@ -1,6 +1,6 @@
 #include "DirectXLib.h"
 
-int CMID(int x, int min, int max) { return (x < min)? min : ((x > max)? max : x); }
+int DirectX::CMID(int x, int min, int max) { return (x < min)? min : ((x > max)? max : x); }
 
 bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int height)
 {
@@ -38,7 +38,7 @@ bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int heig
 	d3dpp.PresentationInterval       = D3DPRESENT_INTERVAL_IMMEDIATE;
 
 	//4.创建设备
-	d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pD3DXDevice);
+	d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd, vertexProcessing, &d3dpp, &pD3DXDevice);
 	d3d9->Release();
 	//创建一个绘制表面
 	pD3DXDevice->CreateOffscreenPlainSurface(width, height, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pD3DSurface, 0);

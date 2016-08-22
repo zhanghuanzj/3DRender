@@ -266,11 +266,12 @@ void cube_init()
 void draw_pixel()
 {
 	//g_directX.drawPixel(300,300,AColor(0,255,0,0));
-	for (int i=0;i<700;++i)
+	for (int i=0;i<100;++i)
 	{
-		for (int j=0;j<400;++j)
+		for (int j=0;j<100;++j)
 		{
-			g_directX.drawPixel(i,j,model.texture_->get_color2(i,j));
+			g_directX.drawPixel(i,j,AColor(0,255,0,0));
+			//g_directX.drawPixel(i,j,model.texture_->get_color2(i,j));
 		}
 	}
 }
@@ -322,9 +323,9 @@ void draw_triangle()
 	//g_directX.drawTriangle(Vector2(100,100,Color(0,255,0,0)),
 	//	Vector2(450,300,Color(0,0,255,0)),
 	//	Vector2(200,200,Color(0,0,0,255)));
-	//g_directX.drawTriangle(Vector2(200,200,Color(0,255,0,0)),
-	//	Vector2(450,300,Color(0,0,255,0)),
-	//	Vector2(550,500,Color(0,0,0,255)));
+	g_directX.drawTriangle(Vertex(Vector3(200,200,0),AColor(0,255,0,0),0,0),
+		Vertex(Vector3(450,300,0),AColor(0,0,255,0),0,0),
+		Vertex(Vector3(550,500,0),AColor(0,0,0,255),0,0));
 }
 
 /************************************************************************/
