@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GameWindow" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQgAAAAAAAAAAACAAAAQEAAAAAAAAQAhAAAQ=</HashCode>
+      <FileName>GameWindow.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameManager" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAQACACABAAAA=</HashCode>
+      <FileName>GameManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DirectX" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAIiQIgAgwAwAAAAAKABAQAAAAAAAAAAdAAA=</HashCode>
+      <FileName>DirectXLib.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AColor" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAACAAAAAAAIAAgBQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Math.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vector2">
+    <Position X="4.75" Y="2.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAQAAAAAAAACAAABgAAAAAAA=</HashCode>
+      <FileName>Math.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vector3" Collapsed="true">
+    <Position X="4" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIBQAAAAAEAAgAYQAAEAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Vector3.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="State" Collapsed="true">
+    <Position X="1.75" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgCAAAAA=</HashCode>
+      <FileName>Enum.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="RenderState" Collapsed="true">
+    <Position X="0.5" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAACAAAAAAAAAgAA=</HashCode>
+      <FileName>Enum.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="微软雅黑" Size="9" />
+</ClassDiagram>

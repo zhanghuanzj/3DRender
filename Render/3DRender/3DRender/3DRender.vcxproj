@@ -76,7 +76,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectXLib.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="GameWindow.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectXLib.h" />
+    <ClInclude Include="Enum.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="Vector3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
