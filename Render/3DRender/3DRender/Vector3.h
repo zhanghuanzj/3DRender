@@ -1,44 +1,43 @@
-#ifndef VECTOR3_H_
-#define VECTOR3_H_
+#ifndef VECTOR3H
+#define VECTOR3H
 #include <cmath>
 class Vector3
 {
 public:
-	Vector3(float x,float y,float z,float w=1):x_(x),y_(y),z_(z),w_(w){}
-	Vector3():x_(),y_(),z_(),w_(1){}
-	Vector3(const Vector3& v):x_(v.x_),y_(v.y_),z_(v.z_),w_(v.w_){}
+	Vector3(float x_,float y_,float z_,float w_=1):x(x_),y(y_),z(z_),w(w_){}
+	Vector3():x(),y(),z(),w(1){}
+	Vector3(const Vector3& v):x(v.x),y(v.y),z(v.z),w(v.w){}
 
 
-	float length(){ return sqrt(x_*x_ +y_*y_+z_*z_);}
+	float length(){ return sqrt(x*x +y*y+z*z);}
 	void normalize();
-	void color_adjust();
-	Vector3 operator+(const Vector3 &v)const { return Vector3(x_+v.x_ , y_+v.y_ , z_+v.z_);}
+	void coloradjust();
+	Vector3 operator+(const Vector3 &v)const { return Vector3(x+v.x , y+v.y , z+v.z);}
 	Vector3 operator-(const Vector3 &v)const 
 	{ 
-		float a = x_-v.x_;
-		return Vector3(x_-v.x_ , y_-v.y_ , z_-v.z_);
+		return Vector3(x-v.x , y-v.y , z-v.z);
 	}
 	Vector3 interp(const Vector3 &v,float factor);
 
-	float x_;
-	float y_;
-	float z_;
-	float w_;
+	float x;
+	float y;
+	float z;
+	float w;
 };
 
 inline float operator*(const Vector3 &v,const Vector3 &v1)
 { 
-	return v1.x_*v.x_+ v1.y_*v.y_ + v1.z_*v.z_  ;
+	return v1.x*v.x+ v1.y*v.y + v1.z*v.z  ;
 }
 
 inline Vector3 operator*(float f,const Vector3 &v)
 { 
-	return Vector3(f*v.x_ , f*v.y_ , f*v.z_); 
+	return Vector3(f*v.x , f*v.y , f*v.z); 
 }
 
 inline Vector3 operator*(const Vector3 &v,float f)
 { 
-	return Vector3(f*v.x_ , f*v.y_ , f*v.z_); 
+	return Vector3(f*v.x , f*v.y , f*v.z); 
 }
 
 inline Vector3 operator/(const Vector3 &v,float f)
@@ -46,9 +45,9 @@ inline Vector3 operator/(const Vector3 &v,float f)
 	return v*(1/f);
 }
 
-inline Vector3 cross_product(const Vector3 &v1,const Vector3 &v2)
+inline Vector3 crossproduct(const Vector3 &v1,const Vector3 &v2)
 {
-	return Vector3(v1.y_*v2.z_ - v1.z_*v2.y_, v1.z_*v2.x_ - v1.x_*v2.z_ , v1.x_*v2.y_-v1.y_*v2.x_);
+	return Vector3(v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z , v1.x*v2.y-v1.y*v2.x);
 }
 
 

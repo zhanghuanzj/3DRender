@@ -83,6 +83,7 @@
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXLib.h" />
@@ -92,6 +93,7 @@
     <ClInclude Include="Math.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

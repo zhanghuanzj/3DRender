@@ -91,10 +91,9 @@ void DirectX::drawPixel(int x,int y, AColor color,float depth)
 	if (z_buffer_[index]>depth)
 	{
 		DWORD* pBits = (DWORD*)LockRect.pBits;
-		pBits[x + y * (LockRect.Pitch >> 2)] = ARGB( color.a_ , color.r_ , color.g_ , color.b_ ); //LockRect.Pitch表示WIDTH所占的字节数
+		pBits[x + y * (LockRect.Pitch >> 2)] = ARGB( color.a_*255 , color.r_*255 , color.g_*255 , color.b_*255 ); //LockRect.Pitch表示WIDTH所占的字节数
 		z_buffer_[index] = depth;
 	}
-
 }
 
 

@@ -10,22 +10,22 @@ using namespace std;
 class AColor
 {
 public:
-	AColor(int a,int r,int g,int b):a_(a),r_(r),g_(g),b_(b){};
+	AColor(float a,float r,float g,float b):a_(a),r_(r),g_(g),b_(b){};
 	AColor interp(const AColor &c,float factor)
 	{
-		int a = a_ + (c.a_-a_)*factor;
-		int r = r_ + (c.r_-r_)*factor;
-		int g = g_ + (c.g_-g_)*factor;
-		int b = b_ + (c.b_-b_)*factor;
+		float a = a_ + (c.a_-a_)*factor;
+		float r = r_ + (c.r_-r_)*factor;
+		float g = g_ + (c.g_-g_)*factor;
+		float b = b_ + (c.b_-b_)*factor;
 		return AColor(a,r,g,b);
 	}
-	int a_;
-	int r_;
-	int g_;
-	int b_;
+	float a_;
+	float r_;
+	float g_;
+	float b_;
 };
 
-inline AColor operator*(const AColor &color,double v)
+inline AColor operator*(const AColor &color,float v)
 {
 	return AColor(color.a_ * v,
 		color.r_ * v,
@@ -33,7 +33,7 @@ inline AColor operator*(const AColor &color,double v)
 		color.b_ * v);
 }
 
-inline AColor operator*(double v,const AColor &color)
+inline AColor operator*(float v,const AColor &color)
 {
 	return AColor(color.a_ * v,
 		color.r_ * v,
@@ -41,7 +41,7 @@ inline AColor operator*(double v,const AColor &color)
 		color.b_ * v);
 }
 
-inline AColor operator/(const AColor &color,double v)
+inline AColor operator/(const AColor &color,float v)
 {
 	return AColor(color.a_ / v,
 		color.r_ / v,
@@ -49,7 +49,7 @@ inline AColor operator/(const AColor &color,double v)
 		color.b_ / v);
 }
 
-inline AColor operator/(double v,const AColor &color)
+inline AColor operator/(float v,const AColor &color)
 {
 	return AColor(color.a_ / v,
 		color.r_ / v,

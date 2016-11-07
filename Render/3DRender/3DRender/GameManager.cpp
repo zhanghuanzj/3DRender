@@ -35,10 +35,18 @@ void GameManager::game_update()
 			double v = sqrt(pow(i-350,2)+pow(j-350,2))-200;
 			if ( v>=0&&v < 2)
 			{
-				rasterizer.drawline_bresenham(350,350,i,j,AColor(0,1+rand()%255,1+rand()%255,1+rand()%255));
+				rasterizer.drawline_bresenham(350,350,i,j,AColor(0,(1+rand()%255)/255.0f,(1+rand()%255)/255.0f,(1+rand()%255)/255.0f));
 			}
 		}
 	}
+
+	/*Vertex v1(Vector3(400,30,0),Vector3(),AColor(0,1.0f,0,0),0,0);
+	Vertex v2(Vector3(200,300,0),Vector3(),AColor(0,0,1.0f,0),0,0);
+	Vertex v3(Vector3(600,500,0),Vector3(),AColor(0,0,0,1.0f),0,0);
+	Vertex v4(Vector3(700,100,0),Vector3(),AColor(0,0,0,1.0f),0,0);
+	rasterizer.draw_triangle(v1,v2,v3);*/
+	//rasterizer.draw_triangle(v1,v3,v4);
+    
 	directX.unlockSurface();
 	directX.flipSurface();
 }

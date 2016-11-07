@@ -1,5 +1,29 @@
 #include "Rasterizer.h"
 
+void Rasterizer::sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3)
+{
+	if (v1.position.y>v2.position.y || (v1.position.y==v2.position.y&&v1.position.x>v2.position.x) )
+	{
+		swap(v1,v2);
+	}
+	if (v2.position.y>v3.position.y || (v2.position.y==v3.position.y&&v2.position.x>v3.position.x) )
+	{
+		swap(v2,v3);
+	}
+	if (v1.position.y>v2.position.y || (v1.position.y==v2.position.y&&v1.position.x>v2.position.x) )
+	{
+		swap(v1,v2);
+	}
+}
+
+Scanline Rasterizer::generate_scanline(Vertex vl,Vertex vr,int y)
+{
+	float width = vr.position.x - vl.position.x;
+	int startX = vl.position.x+0.5;
+	Vertex step((vr.position-vl.position)/width,(vr.normal-vl.normal)/width,(vr.color-vl.color)/width,(vr.u-vl.u)/width,(vr.v-vl.v)/width);
+	return Scanline(vl,step,startX,vl.position.y+0.5,width);
+}
+
 /************************************************************************/
 /* 数值微分DDA(Digital Differential Analyzer)算法                        */
 /************************************************************************/
@@ -194,5 +218,66 @@ void Rasterizer::drawline_bresenham(int x1,int y1,int x2,int y2,AColor color)
 				e -= 2*dy*flag;
 			}
 		}
+	}
+}
+
+void Rasterizer::draw_scanline(Vertex vl,Vertex vr,int y)
+{
+	Scanline scanline = generate_scanline(vl,vr,y);
+	int lenght = scanline.width+0.5;
+	for (int i=0;i<=lenght;++i) 
+	{
+		DirectX::instance().drawPixel(scanline.x+i,scanline.y,scanline.v.color);
+		scanline.v.add(scanline.step);
+	}
+}
+
+void Rasterizer::draw_top_flat_triangle(Vertex v1,Vertex v2,Vertex v3)
+{
+	int startY = v1.position.y + 0.5;
+	int endY = v3.position.y + 0.5;
+	for (int y=startY;y<=endY;++y) 
+	{
+		float factor = static_cast<float>(y-startY)/(endY-startY);
+		Vertex vl = v1.interp(v3,factor);
+		Vertex vr = v2.interp(v3,factor);
+		draw_scanline(vl,vr,y);
+	}
+}
+
+void Rasterizer::draw_button_flat_triangle(Vertex v1,Vertex v2,Vertex v3)
+{
+	int startY = v1.position.y + 0.5;
+	int endY = v3.position.y + 0.5;
+	for (int y=startY;y<=endY;++y) 
+	{
+		float factor = static_cast<float>(y-startY)/(endY-startY);
+		Vertex vl = v1.interp(v2,factor);
+		Vertex vr = v1.interp(v3,factor);
+		draw_scanline(vl,vr,y);
+	}
+}
+
+void Rasterizer::draw_triangle(Vertex v1,Vertex v2,Vertex v3)
+{
+	sort_vertex(v1,v2,v3);
+	if (v1.position.y==v2.position.y)
+	{
+		draw_top_flat_triangle(v1,v2,v3);
+	}
+	else if (v2.position.y==v3.position.y)
+	{
+		draw_button_flat_triangle(v1,v2,v3);
+	}
+	else
+	{
+		float factor = (v2.position.y-v1.position.y)/(v3.position.y-v1.position.y);
+		Vertex v4 = v1.interp(v3,factor);
+		if (v4.position.x<v2.position.x)
+		{
+			swap(v4,v2);
+		}
+		draw_button_flat_triangle(v1,v2,v4);
+		draw_top_flat_triangle(v2,v4,v3);
 	}
 }
