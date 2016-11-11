@@ -16,12 +16,15 @@ void Rasterizer::sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3)
 	}
 }
 
+int yy;
 Scanline Rasterizer::generate_scanline(Vertex vl,Vertex vr,int y)
 {
-	float width = vr.position.x - vl.position.x;
-	int startX = vl.position.x+0.5;
-	Vertex step((vr.position-vl.position)/width,(vr.normal-vl.normal)/width,(vr.color-vl.color)/width,(vr.u-vl.u)/width,(vr.v-vl.v)/width);
-	return Scanline(vl,step,startX,vl.position.y+0.5,width);
+	float divide = vr.position.x - vl.position.x;
+	int startX = static_cast<int>(vl.position.x + 0.5f);
+	int width = static_cast<int>(vr.position.x + 0.5f) - startX;
+	Vertex step((vr.position-vl.position)/divide,(vr.color-vl.color)/divide,(vr.u-vl.u)/divide,(vr.v-vl.v)/divide);
+	step.inv_w = (vr.inv_w-vl.inv_w)/divide;
+	return Scanline(vl,step,startX,y,width);
 }
 
 /************************************************************************/
@@ -221,13 +224,16 @@ void Rasterizer::drawline_bresenham(int x1,int y1,int x2,int y2,AColor color)
 	}
 }
 
+
 void Rasterizer::draw_scanline(Vertex vl,Vertex vr,int y)
 {
 	Scanline scanline = generate_scanline(vl,vr,y);
-	int lenght = scanline.width+0.5;
-	for (int i=0;i<=lenght;++i) 
+	for (int i=0;i<=scanline.width;++i)
 	{
-		DirectX::instance().drawPixel(scanline.x+i,scanline.y,scanline.v.color);
+		/*AColor color = scanline.v.color/scanline.v.inv_w;
+		color.normalize();*/
+		AColor color = texture->get_color(scanline.v.u/scanline.v.inv_w,scanline.v.v/scanline.v.inv_w);
+		DirectX::instance().drawPixel(scanline.x+i,scanline.y,color);
 		scanline.v.add(scanline.step);
 	}
 }
@@ -236,12 +242,13 @@ void Rasterizer::draw_top_flat_triangle(Vertex v1,Vertex v2,Vertex v3)
 {
 	int startY = v1.position.y + 0.5;
 	int endY = v3.position.y + 0.5;
-	for (int y=startY;y<=endY;++y) 
+	for (float y=startY;y<endY;++y) 
 	{
-		float factor = static_cast<float>(y-startY)/(endY-startY);
+		float factor = (static_cast<float>(y+0.5)-v1.position.y)/(v3.position.y-v1.position.y);
 		Vertex vl = v1.interp(v3,factor);
 		Vertex vr = v2.interp(v3,factor);
 		draw_scanline(vl,vr,y);
+		
 	}
 }
 
@@ -249,12 +256,13 @@ void Rasterizer::draw_button_flat_triangle(Vertex v1,Vertex v2,Vertex v3)
 {
 	int startY = v1.position.y + 0.5;
 	int endY = v3.position.y + 0.5;
-	for (int y=startY;y<=endY;++y) 
+	for (int y=startY;y<endY;++y) 
 	{
-		float factor = static_cast<float>(y-startY)/(endY-startY);
+		float factor = (static_cast<float>(y+0.5)-v1.position.y)/(v3.position.y-v1.position.y);
 		Vertex vl = v1.interp(v2,factor);
 		Vertex vr = v1.interp(v3,factor);
 		draw_scanline(vl,vr,y);
+		
 	}
 }
 
@@ -280,4 +288,13 @@ void Rasterizer::draw_triangle(Vertex v1,Vertex v2,Vertex v3)
 		draw_button_flat_triangle(v1,v2,v4);
 		draw_top_flat_triangle(v2,v4,v3);
 	}
+}
+
+void Rasterizer::set_texture(string path)
+{
+	if (texture!=nullptr)
+	{
+		delete texture;
+	}
+	texture = new Texture(path);
 }

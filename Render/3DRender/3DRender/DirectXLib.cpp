@@ -1,10 +1,5 @@
 #include "DirectXLib.h"
 
-int DirectX::CMID(int x, int min, int max) 
-{ 
-	return (x < min)? min : ((x > max)? max : x); 
-}
-
 bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int height)
 {
 	//1.创建接口

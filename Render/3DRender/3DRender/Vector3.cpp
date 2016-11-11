@@ -16,5 +16,6 @@ Vector3 Vector3::interp(const Vector3 &v,float factor)
 	float x_ = x+(v.x-x)*factor;
 	float y_ = y+(v.y-y)*factor;
 	float z_ = z+(v.z-z)*factor;
-	return Vector3(x_,y_,z_);
+	float w_ = w+(v.w-w)*factor;
+	return Vector3(x_,y_,z_,w_);
 }

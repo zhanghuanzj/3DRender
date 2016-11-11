@@ -7,23 +7,26 @@
 class Vertex
 {
 public:
-	Vertex(const Vector3 &position_,Vector3 normal_,const AColor &color_,float u_,float v_):position(position_),normal(normal_),color(color_),u(u_),v(v_){}
+	Vertex(const Vector3 &position_,const AColor &color_,float u_,float v_):position(position_),color(color_),u(u_),v(v_),inv_w(1.0f){}
+	Vertex():position(),color(0.0f,0.0f,0.0f,0.0f),u(0.0f),v(0.0f){}
 	Vertex interp(const Vertex &v,float factor);
 	bool isxy_same(const Vertex &v)
 	{
 		return position.x==v.position.x&&position.y==v.position.y;
 	}
-	void add(const Vertex &v)
+	void add(const Vertex &vertex)
 	{
-		position = position+v.position;
-		normal = normal+v.normal;
-		color = color+v.color;
+		position = position+vertex.position;
+		color = color+vertex.color;
+		u += vertex.u;
+		v += vertex.v;
+		inv_w += vertex.inv_w;
 	}
 
 	Vector3 position;
-	Vector3 normal;
 	AColor color;
 	float u;
 	float v;
+	float inv_w;
 };
 #endif

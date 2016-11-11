@@ -62,6 +62,7 @@ void GameWindow::message_dispatch()
 
 LRESULT CALLBACK GameWindow::WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 {
+	static POINT point;
 	switch (message)
 	{
 	case WM_DESTROY:
@@ -74,6 +75,11 @@ LRESULT CALLBACK GameWindow::WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM
 			DestroyWindow(hwnd);
 			GameManager::Instance().game_end();
 		}
+		break;
+	case WM_MOUSEMOVE:
+		GetCursorPos(&point);
+		ScreenToClient(hwnd,&point);
+		//cout<<point.x<<" "<<point.y<<endl;
 		break;
 	default:
 		return DefWindowProc(hwnd,message,wparam,lParam);

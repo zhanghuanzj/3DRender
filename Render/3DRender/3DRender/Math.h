@@ -7,6 +7,11 @@
 #define PI 3.141592654
 using namespace std;
 
+inline float CMID(float x, float min, float max) 
+{ 
+	return (x < min)? min : ((x > max)? max : x); 
+}
+
 class AColor
 {
 public:
@@ -19,11 +24,21 @@ public:
 		float b = b_ + (c.b_-b_)*factor;
 		return AColor(a,r,g,b);
 	}
+	void normalize()
+	{
+		a_ = CMID(a_,0.0f,1.0f),
+		r_ = CMID(r_,0.0f,1.0f),
+		g_ = CMID(g_,0.0f,1.0f),
+		b_ = CMID(b_,0.0f,1.0f);
+	}
+	
 	float a_;
 	float r_;
 	float g_;
 	float b_;
 };
+
+
 
 inline AColor operator*(const AColor &color,float v)
 {
@@ -59,10 +74,10 @@ inline AColor operator/(float v,const AColor &color)
 
 inline AColor operator+(const AColor &color1,const AColor &color2)
 {
-	return AColor(color1.a_ + color2.a_,
-		color1.r_ + color2.r_,
-		color1.g_ + color2.g_,
-		color1.b_ + color2.b_);
+	return AColor(CMID(color1.a_ + color2.a_,0.0f,1.0f),
+		CMID(color1.r_ + color2.r_,0.0f,1.0f),
+		CMID(color1.g_ + color2.g_,0.0f,1.0f),
+		CMID(color1.b_ + color2.b_,0.0f,1.0f));
 }
 
 inline AColor operator-(const AColor &color1,const AColor &color2)
@@ -100,6 +115,7 @@ inline Vector2 operator*(float f,const Vector2 &v)
 
 float Sin(float degree);
 float Cos(float degree);
-float Tan(float defree);
+float Tan(float degree);
+float Cot(float degree);
 
 #endif

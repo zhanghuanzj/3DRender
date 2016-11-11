@@ -3,6 +3,9 @@
 
 #include "GameWindow.h"
 #include "Rasterizer.h"
+#include "Cube.h"
+#include "Matrix.h"
+#include "Camera.h"
 class GameManager
 {
 public:
@@ -13,9 +16,9 @@ public:
 	void game_end();
 
 private:
-	GameManager(){}
+	GameManager():cube(1){}
 	Rasterizer rasterizer;
-
+	Cube cube;
 	
 };
 #endif

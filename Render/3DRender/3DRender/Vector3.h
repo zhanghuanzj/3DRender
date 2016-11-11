@@ -10,13 +10,11 @@ public:
 
 
 	float length(){ return sqrt(x*x +y*y+z*z);}
+	float theta(const Vector3 &v){}
 	void normalize();
 	void coloradjust();
 	Vector3 operator+(const Vector3 &v)const { return Vector3(x+v.x , y+v.y , z+v.z);}
-	Vector3 operator-(const Vector3 &v)const 
-	{ 
-		return Vector3(x-v.x , y-v.y , z-v.z);
-	}
+	Vector3 operator-(const Vector3 &v)const { return Vector3(x-v.x , y-v.y , z-v.z);}
 	Vector3 interp(const Vector3 &v,float factor);
 
 	float x;

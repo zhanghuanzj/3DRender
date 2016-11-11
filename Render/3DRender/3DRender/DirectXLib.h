@@ -54,8 +54,7 @@ public:
 
 	//设置渲染模式
 	void set_render_state(RenderState render_sate){render_state_=render_sate;}
-	//获取中间值
-	int CMID(int x, int min, int max);
+
 
 	DWORD ARGB(int a,int r,int g,int b){return DWORD((a<<24)+(r<<16)+(g<<8)+b);}
 	//析构
