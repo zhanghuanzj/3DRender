@@ -32,26 +32,6 @@ public:
 	//缓冲区翻转显示
 	void flipSurface();
 
-	//绘制直线
-	void drawLine(int ,int ,int ,int,AColor  );
-
-	////绘制三角形
-	//bool compare(const Vertex &v1,const Vertex &v2){return v1.position_.y_<v2.position_.y_;}
-	//void sortTriangleVector2( Vertex &v1, Vertex &v2, Vertex &v3);
-	//void drawScanLine( Vertex &v1, Vertex &v2);
-	//void drawTriangleBottomFlat( Vertex &v1, Vertex &v2, Vertex &v3);
-	//void drawTriangleTopFlat( Vertex &v1, Vertex &v2, Vertex &v3);
-	//void drawTriangle( Vertex &v1, Vertex &v2, Vertex &v3);
-
-	////绘制线框模型
-	//void draw_wireframe_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
-	//void draw_mesh_model(Model& model,const set<int> &remove_vertex_index,const set<int> &remove_triangle_index);
-	//获取设备
-	IDirect3DDevice9* getDevice();
-
-	//获取缓冲区
-	IDirect3DSurface9* getSurface();
-
 	//设置渲染模式
 	void set_render_state(RenderState render_sate){render_state_=render_sate;}
 

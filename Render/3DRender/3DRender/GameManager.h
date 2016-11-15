@@ -11,14 +11,26 @@ class GameManager
 public:
 	static GameManager& Instance();
 	
-	void game_start(HWND hwnd,const int WIDTH,const int HEIGHT);
+	void game_start(const int WIDTH,const int HEIGHT);
 	void game_update();
 	void game_end();
 
+	void draw_pixels();
+	void draw_lines();
+	void draw_circle();
+	void draw_triangle();
+	void draw_cube();
 private:
-	GameManager():cube(1){}
+	GameManager():pcube(nullptr){}
+	~GameManager()
+	{
+		if (pcube!=nullptr)
+		{
+			delete pcube;
+		}
+	}
 	Rasterizer rasterizer;
-	Cube cube;
+	Cube *pcube;
 	
 };
 #endif

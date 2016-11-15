@@ -18,7 +18,7 @@ public:
 	~GameWindow();
 
 	void message_dispatch();
-
+	HWND get_hwnd(){return hwnd;}
 private:
 	string name;
 	string title;

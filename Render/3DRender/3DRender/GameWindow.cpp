@@ -1,5 +1,7 @@
 #include "GameWindow.h"
 
+static POINT center;
+
 GameWindow::GameWindow(const string name_t,const string title_t,int width,int height):name(name_t),title(title_t),WIDTH(width),HEIGHT(height)
 {
 	//1.创建窗口类
@@ -29,8 +31,28 @@ GameWindow::GameWindow(const string name_t,const string title_t,int width,int he
 	ShowWindow(hwnd,SW_NORMAL);
 	UpdateWindow(hwnd);
 
-	GameManager::Instance().game_start(hwnd,WIDTH,HEIGHT);
-	message_dispatch();
+	//5.隐藏鼠标，设为屏幕中心
+	ShowCursor(false);
+	center.x = WIDTH/2;
+	center.y = HEIGHT/2;
+	ClientToScreen(hwnd,&center);
+	SetCursorPos(center.x,center.y);
+	//6.限定鼠标在窗口内
+	RECT rect;
+	GetClientRect(hwnd,&rect);
+	POINT left_top;
+	left_top.x = rect.left;
+	left_top.y = rect.top;
+	POINT right_bottom;
+	right_bottom.x = rect.right;
+	right_bottom.y = rect.bottom;
+	ClientToScreen(hwnd,&left_top);
+	ClientToScreen(hwnd,&right_bottom);
+	rect.left = left_top.x;
+	rect.top = left_top.y;
+	rect.right = right_bottom.x;
+	rect.bottom = right_bottom.y;
+	ClipCursor(&rect);
 }
 
 void GameWindow::message_dispatch()
@@ -62,24 +84,54 @@ void GameWindow::message_dispatch()
 
 LRESULT CALLBACK GameWindow::WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM lParam)
 {
+	float units = 0.05f;
 	static POINT point;
+
 	switch (message)
 	{
 	case WM_DESTROY:
-		PostQuitMessage(0);
 		GameManager::Instance().game_end();
+		PostQuitMessage(0);
 		break;
 	case WM_KEYDOWN:
-		if (wparam==VK_ESCAPE)
+		if (wparam==VK_ESCAPE)DestroyWindow(hwnd);
+		else if (wparam==VK_UP) Camera::instance().move_along_up_vector(units);
+		else if (wparam==VK_DOWN) Camera::instance().move_along_up_vector(-units);
+		else if (wparam==VK_LEFT) Camera::instance().move_along_right_vector(-units);
+		else if (wparam==VK_RIGHT) Camera::instance().move_along_right_vector(units);
+		else if (wparam==VK_OEM_PLUS) Camera::instance().move_along_lookat_vector(units);
+		else if (wparam==VK_OEM_MINUS) Camera::instance().move_along_lookat_vector(-units);
+		else if (wparam==VK_TAB)
 		{
-			DestroyWindow(hwnd);
-			GameManager::Instance().game_end();
+			switch (Rasterizer::renderState)
+			{
+			case RenderState::WIREFRAME:
+				Rasterizer::renderState = RenderState::TEXTURE;
+				break;
+			case RenderState::TEXTURE:
+				Rasterizer::renderState = RenderState::COLOR;
+				break;
+			case RenderState::COLOR:
+				Rasterizer::renderState = RenderState::WIREFRAME;
+				break;
+			default:
+				break;
+			}
 		}
 		break;
 	case WM_MOUSEMOVE:
 		GetCursorPos(&point);
-		ScreenToClient(hwnd,&point);
-		//cout<<point.x<<" "<<point.y<<endl;
+		if (center.x!=point.x||center.y!=point.y)
+		{
+			float angle = 0.4f;
+			if (point.x>center.x) Camera::instance().rotate_along_up_vector(-angle);
+			else if (point.x<center.x) Camera::instance().rotate_along_up_vector(angle);
+			else if (point.y>center.y) Camera::instance().rotate_along_right_vector(-angle);
+			else if (point.y<center.y) Camera::instance().rotate_along_right_vector(angle);
+			point = center;
+			SetCursorPos(center.x,center.y);
+		}
+		
 		break;
 	default:
 		return DefWindowProc(hwnd,message,wparam,lParam);

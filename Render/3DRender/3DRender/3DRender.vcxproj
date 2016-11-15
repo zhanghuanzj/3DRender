@@ -98,11 +98,9 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="VColor.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vertex.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

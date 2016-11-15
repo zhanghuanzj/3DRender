@@ -1,6 +1,6 @@
 #include "Texture.h"
 using namespace Gdiplus;
-Texture::Texture(string path)
+Texture::Texture(string path):pixels()
 {
 	GdiplusStartupInput gdiplusstartupinput;
 	ULONG_PTR gdiplustoken;
@@ -12,31 +12,22 @@ Texture::Texture(string path)
 	width = bitmap->GetWidth();
 	height = bitmap->GetHeight();
 
+	pixels = new AColor[height*width];
+		;vector<vector<AColor>>(height,vector<AColor>(width,AColor(0.0f,0.0f,0.0f,0.0f)));
 	for (int i=0;i<width;++i)
 	{
-		vector<AColor> pixel;
 		for (int j=0;j<height;++j)
 		{
 			Gdiplus::Color color;
 			bitmap->GetPixel(i,j,&color);
-			int r = color.GetR();
-			pixel.push_back( AColor(static_cast<float>(color.GetAlpha())/255,static_cast<float>(color.GetRed())/255,static_cast<float>(color.GetGreen())/255,static_cast<float>(color.GetGreen())/255) );
+			pixels[i*width+j] = ( AColor(color.GetAlpha(),color.GetRed(),color.GetGreen(),color.GetGreen()) );
 		}
-		pixels.push_back(pixel);
 	}
 	GdiplusShutdown(gdiplustoken);
 }
 
-AColor Texture::get_color(float u,float v)
-{
-	/*cout<<u<<" "<<v<<endl;
-	cout<<(int)((width-1)*u)<<" "<<(int)((height-1)*v)<<endl;*/
-	u = CMID(u,0.0f,1.0f);
-	v = CMID(v,0.0f,1.0f);
-	return pixels[(int)((width-1)*u)][(int)((height-1)*v)];
-}
 
-AColor Texture::get_color2(int u,int v)
+Texture::~Texture()
 {
-	return pixels[u][v];
+	delete []pixels;
 }

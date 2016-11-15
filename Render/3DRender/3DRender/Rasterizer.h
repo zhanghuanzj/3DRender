@@ -7,12 +7,27 @@
 
 struct Scanline
 {
-	Scanline(const Vertex &v_,const Vertex &Step_,int x_,int y_,float width_):v(v_),step(Step_),x(x_),y(y_),width(width_){}
-	Vertex v;
-	Vertex step;
+	Scanline(VColor color_,VColor step_):color(color_),step(step_){}
+	void to_next_color()
+	{
+		color += step;
+		inv_w += dinv_w;
+	}
+	void to_next_texture()
+	{
+		u += du;
+		v += dv;
+		inv_w += dinv_w;
+	}
+	
 	int x;
 	int y;
+	VColor color;
+	VColor step;
+	float u,v,inv_w;
+	float du,dv,dinv_w;
 	int width;
+
 };
 
 class Triangle
@@ -27,14 +42,8 @@ public:
 class Rasterizer
 {
 public:
-	Rasterizer():texture(nullptr){}
-	~Rasterizer()
-	{
-		if (texture!=nullptr)
-		{
-			delete texture;
-		}
-	}
+	Rasterizer():texture(nullptr),directX(DirectX::instance()){}
+
 	void sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3);
 
 	Scanline generate_scanline(Vertex vl,Vertex vr,int y);
@@ -50,10 +59,16 @@ public:
 	void draw_button_flat_triangle(Vertex v1,Vertex v2,Vertex v3);
 
 	void draw_triangle(Vertex v1,Vertex v2,Vertex v3);
+	void draw_triangle_wireframe(Vertex v1,Vertex v2,Vertex v3);
 
-	void set_texture(string path);
+	void set_texture(Texture *ptexture);
 
 private:
 	Texture *texture;
+	DirectX &directX;
+public:
+	static RenderState renderState;
 };
+
+
 #endif

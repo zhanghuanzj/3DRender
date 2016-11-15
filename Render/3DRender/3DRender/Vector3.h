@@ -15,6 +15,20 @@ public:
 	void coloradjust();
 	Vector3 operator+(const Vector3 &v)const { return Vector3(x+v.x , y+v.y , z+v.z);}
 	Vector3 operator-(const Vector3 &v)const { return Vector3(x-v.x , y-v.y , z-v.z);}
+	Vector3& operator+=(const Vector3 &v) 
+	{ 
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
+	}
+	Vector3& operator-=(const Vector3 &v) 
+	{ 
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
+	}
 	Vector3 interp(const Vector3 &v,float factor);
 
 	float x;

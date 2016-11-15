@@ -1,13 +1,7 @@
 #ifndef ENUM_H_
 #define ENUM_H_
 
-enum State
-{
-	MODEL_TRANSFORM,
-	CAMERA_TRANSFORM
-};
-
-enum RenderState
+enum class RenderState
 {
 	WIREFRAME,
 	TEXTURE,

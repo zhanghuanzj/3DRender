@@ -1,5 +1,7 @@
 #include "Rasterizer.h"
 
+RenderState Rasterizer::renderState = RenderState::TEXTURE;
+
 void Rasterizer::sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3)
 {
 	if (v1.position.y>v2.position.y || (v1.position.y==v2.position.y&&v1.position.x>v2.position.x) )
@@ -16,15 +18,23 @@ void Rasterizer::sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3)
 	}
 }
 
-int yy;
 Scanline Rasterizer::generate_scanline(Vertex vl,Vertex vr,int y)
 {
-	float divide = vr.position.x - vl.position.x;
-	int startX = static_cast<int>(vl.position.x + 0.5f);
-	int width = static_cast<int>(vr.position.x + 0.5f) - startX;
-	Vertex step((vr.position-vl.position)/divide,(vr.color-vl.color)/divide,(vr.u-vl.u)/divide,(vr.v-vl.v)/divide);
-	step.inv_w = (vr.inv_w-vl.inv_w)/divide;
-	return Scanline(vl,step,startX,y,width);
+	
+	float divide = 1.0f/(vr.position.x - vl.position.x);
+	Scanline scanline(vl.color,(vr.color-vl.color)*divide);
+	scanline.x = static_cast<int>(vl.position.x + 0.5f);
+	scanline.y = y;
+	scanline.inv_w = vl.inv_w;
+	scanline.dinv_w = (vr.inv_w-vl.inv_w)*divide;
+	scanline.width = static_cast<int>(vr.position.x + 0.5f) - scanline.x;
+
+	scanline.u = vl.u;
+	scanline.v = vl.v;
+	scanline.du = (vr.u-vl.u)*divide;
+	scanline.dv = (vr.v-vl.v)*divide;
+
+	return scanline;
 }
 
 /************************************************************************/
@@ -228,13 +238,21 @@ void Rasterizer::drawline_bresenham(int x1,int y1,int x2,int y2,AColor color)
 void Rasterizer::draw_scanline(Vertex vl,Vertex vr,int y)
 {
 	Scanline scanline = generate_scanline(vl,vr,y);
-	for (int i=0;i<=scanline.width;++i)
+	for (int i=0;i<scanline.width;++i)
 	{
-		/*AColor color = scanline.v.color/scanline.v.inv_w;
-		color.normalize();*/
-		AColor color = texture->get_color(scanline.v.u/scanline.v.inv_w,scanline.v.v/scanline.v.inv_w);
-		DirectX::instance().drawPixel(scanline.x+i,scanline.y,color);
-		scanline.v.add(scanline.step);
+		float w = 1.0f/scanline.inv_w;
+		if (renderState==RenderState::TEXTURE)
+		{
+			AColor color = texture->get_color(scanline.u*w,scanline.v*w);
+			directX.drawPixel(scanline.x+i,scanline.y,color);
+			scanline.to_next_texture();
+		}
+		else 
+		{
+			VColor color = scanline.color*w;		
+			directX.drawPixel(scanline.x+i,scanline.y,color.to_AColor());
+			scanline.to_next_color();
+		}
 	}
 }
 
@@ -268,6 +286,11 @@ void Rasterizer::draw_button_flat_triangle(Vertex v1,Vertex v2,Vertex v3)
 
 void Rasterizer::draw_triangle(Vertex v1,Vertex v2,Vertex v3)
 {
+	if (renderState==RenderState::WIREFRAME)
+	{
+		draw_triangle_wireframe(v1,v2,v3);
+		return;
+	}
 	sort_vertex(v1,v2,v3);
 	if (v1.position.y==v2.position.y)
 	{
@@ -290,11 +313,18 @@ void Rasterizer::draw_triangle(Vertex v1,Vertex v2,Vertex v3)
 	}
 }
 
-void Rasterizer::set_texture(string path)
+void Rasterizer::draw_triangle_wireframe(Vertex v1,Vertex v2,Vertex v3)
+{
+	drawline_bresenham(v1.position.x,v1.position.y,v2.position.x,v2.position.y,AColor(0,255,0,0));
+	drawline_bresenham(v1.position.x,v1.position.y,v3.position.x,v3.position.y,AColor(0,255,0,0));
+	drawline_bresenham(v3.position.x,v3.position.y,v2.position.x,v2.position.y,AColor(0,255,0,0));
+}
+
+void Rasterizer::set_texture(Texture *ptexture)
 {
 	if (texture!=nullptr)
 	{
 		delete texture;
 	}
-	texture = new Texture(path);
+	texture = ptexture;
 }

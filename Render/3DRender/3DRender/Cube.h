@@ -8,7 +8,7 @@
 class Cube
 {
 public:
-	Cube(int n):local_vertexes(24,Vertex()),trans_vertexes(24,Vertex())
+	Cube(int n,string path,Vector3 pos):local_vertexes(24,Vertex()),trans_vertexes(24,Vertex()),texture(path),position(pos)
 	{
 		int cube_vertex[24][3] = { 
 			{-n,n,-n},{-n,-n,-n},{n,-n,-n},{n,n,-n},
@@ -35,14 +35,14 @@ public:
 		for (int i=0;i<24;++i)
 		{
 			Vector3 v(cube_vertex[i][0],cube_vertex[i][1],cube_vertex[i][2]);
-			AColor color(0,colors[i][0],colors[i][1],colors[i][2]);
+			VColor color(0,colors[i][0],colors[i][1],colors[i][2]);
 			Vertex vertex(v,color,uv[i%4][0],uv[i%4][1]);
 			local_vertexes[i] = vertex;
 			trans_vertexes[i] = vertex;
 		}
-
 	}
-
+	Texture texture;
+	Vector3 position;
 	vector<Vertex> local_vertexes;
 	vector<Vertex> trans_vertexes;
 };
