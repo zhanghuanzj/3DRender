@@ -181,6 +181,11 @@ public:
 		}
 		return triangle;
 	}
+
+	Vector3 get_position()
+	{
+		return position;
+	}
 private:
 	int width;
 	int height;

@@ -73,11 +73,12 @@ void GameWindow::message_dispatch()
 		else
 		{
 			curTime = GetTickCount();
-			if (curTime-preTime>30)
-			{
+			//cout<<1000.0f/(curTime-preTime)<<endl;
+			//if (curTime-preTime>30)
+			//{
 				preTime = curTime;
 				GameManager::Instance().game_update();
-			}
+			//}
 		}
 	}
 }

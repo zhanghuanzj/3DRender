@@ -5,6 +5,14 @@
 #include <vector>
 #include "Vertex.h"
 #include "Texture.h"
+
+struct Material
+{
+	VColor diffuse;
+	VColor specular;
+	VColor ambient;
+};
+
 class Cube
 {
 public:
@@ -37,13 +45,21 @@ public:
 			Vector3 v(cube_vertex[i][0],cube_vertex[i][1],cube_vertex[i][2]);
 			VColor color(0,colors[i][0],colors[i][1],colors[i][2]);
 			Vertex vertex(v,color,uv[i%4][0],uv[i%4][1]);
+			v.normalize();
+			vertex.set_normal(v);
 			local_vertexes[i] = vertex;
 			trans_vertexes[i] = vertex;
 		}
+
+		material.diffuse = VColor(0.0f,0.752f,0.606f,0.226f);
+		material.specular = VColor(0.0f,0.628f,0.556f,0.366f);
+		material.ambient = VColor(0.0f,0.247f,0.200f,0.075f);
+
 	}
 	Texture texture;
 	Vector3 position;
 	vector<Vertex> local_vertexes;
 	vector<Vertex> trans_vertexes;
+	Material material;
 };
 #endif

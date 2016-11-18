@@ -23,7 +23,7 @@ bool DirectX::initialDirectX(HINSTANCE hInstance, HWND hWnd, int width, int heig
 	d3dpp.BackBufferWidth            = width;
 	d3dpp.BackBufferHeight           = height;
 	d3dpp.BackBufferFormat           = D3DFMT_A8R8G8B8;
-	d3dpp.BackBufferCount            = 1;
+	d3dpp.BackBufferCount            = 2;
 	d3dpp.MultiSampleType            = D3DMULTISAMPLE_NONE;
 	d3dpp.MultiSampleQuality         = 0;
 	d3dpp.SwapEffect                 = D3DSWAPEFFECT_DISCARD;

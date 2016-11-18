@@ -34,6 +34,9 @@ Scanline Rasterizer::generate_scanline(Vertex vl,Vertex vr,int y)
 	scanline.du = (vr.u-vl.u)*divide;
 	scanline.dv = (vr.v-vl.v)*divide;
 
+	scanline.light = vl.light;
+	scanline.dl = (vr.light - vl.light)*divide;
+
 	return scanline;
 }
 
@@ -244,6 +247,9 @@ void Rasterizer::draw_scanline(Vertex vl,Vertex vr,int y)
 		if (renderState==RenderState::TEXTURE)
 		{
 			AColor color = texture->get_color(scanline.u*w,scanline.v*w);
+			color.r_ = max(0,min(color.r_*scanline.light.r,255));
+			color.g_ = max(0,min(color.g_*scanline.light.g,255));
+			color.b_ = max(0,min(color.b_*scanline.light.b,255));
 			directX.drawPixel(scanline.x+i,scanline.y,color);
 			scanline.to_next_texture();
 		}

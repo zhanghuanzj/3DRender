@@ -9,5 +9,6 @@ Vertex Vertex::interp(const Vertex &ver,float factor)
 	vertex.inv_w = inv;
 	vertex.u = u + (ver.u - u)*factor;
 	vertex.v = v + (ver.v - v)*factor;
+	vertex.light = light + (ver.light - light)*factor;
 	return vertex;
 }

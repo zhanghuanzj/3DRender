@@ -8,11 +8,22 @@ GameManager& GameManager::Instance()
 
 void GameManager::game_start(const int WIDTH,const int HEIGHT)
 {
+	//Window
 	GameWindow myWindow("Render","Refactor",WIDTH,HEIGHT);
+	//Camera
 	Camera::instance(WIDTH,HEIGHT);
+	//DirectX
 	DirectX::instance().initialDirectX(GetModuleHandle(nullptr),myWindow.get_hwnd(),WIDTH,HEIGHT);
-	pcube = new Cube(1,"Texture1.jpg",Vector3(0,0,6));
+	//Cube
+	pcube = new Cube(1,"texture1.bmp",Vector3(0,0,6));
+	//Rasterizer
 	rasterizer.set_texture(&pcube->texture);
+	//Light
+	light.position = Vector3(-1000,1000,5);
+	light.diffuse = VColor(0.0f,1.0f,1.0f,1.0f);
+	light.specular = VColor(0.0f,1.0f,1.0f,1.0f);
+	light.ambient = VColor(0.0f,1.0f,1.0f,1.0f);
+	//Message Loop
 	myWindow.message_dispatch();
 }
 
@@ -93,7 +104,7 @@ void GameManager::draw_cube()
 	rotate_vector.normalize();
 	Matrix cube_rotate_matrix;
 	cube_rotate_matrix.identify();
-	cube_rotate_matrix.setRotate(rotate_vector,1);
+	cube_rotate_matrix.setRotate(rotate_vector,0.1);
 
 	Matrix model_move_matrix;
 	model_move_matrix.identify();
@@ -104,6 +115,22 @@ void GameManager::draw_cube()
 		pcube->local_vertexes[i].position = pcube->local_vertexes[i].position*cube_rotate_matrix;  //物体旋转
 		pcube->trans_vertexes[i] = pcube->local_vertexes[i];
 		pcube->trans_vertexes[i].position = pcube->trans_vertexes[i].position*model_move_matrix;   //物体移动
+		pcube->trans_vertexes[i].normal = pcube->trans_vertexes[i].position - pcube->position;
+		pcube->trans_vertexes[i].normal.normalize();
+		//光照处理
+		VColor light_color;
+		//Diffuse
+		Vector3 l = light.position - pcube->trans_vertexes[i].position;
+		l.normalize();
+		//pcube->trans_vertexes[i].light += max(pcube->trans_vertexes[i].normal*l,0)*light.diffuse*pcube->material.diffuse;
+		//Specular
+		Vector3 r = 2*pcube->trans_vertexes[i].normal*(pcube->trans_vertexes[i].normal*l) - l;
+		r.normalize();
+		Vector3 v = camera.get_position() - pcube->trans_vertexes[i].position;
+		v.normalize();
+		pcube->trans_vertexes[i].light += max(r*v,0)*light.specular*pcube->material.specular;
+		//Ambient
+		//pcube->trans_vertexes[i].light += light.ambient*pcube->material.ambient;
 	}
 	//2.世界空间————(观察变换)————>相机空间
 	camera.eye_transform(pcube->trans_vertexes); 

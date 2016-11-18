@@ -5,6 +5,14 @@
 #include "Vertex.h"
 #include "Texture.h"
 
+
+struct Light
+{
+	VColor diffuse;
+	VColor specular;
+	VColor ambient;
+	Vector3 position;
+};
 struct Scanline
 {
 	Scanline(VColor color_,VColor step_):color(color_),step(step_){}
@@ -18,12 +26,15 @@ struct Scanline
 		u += du;
 		v += dv;
 		inv_w += dinv_w;
+		light += dl;
 	}
 	
 	int x;
 	int y;
 	VColor color;
 	VColor step;
+	VColor light;
+	VColor dl;
 	float u,v,inv_w;
 	float du,dv,dinv_w;
 	int width;

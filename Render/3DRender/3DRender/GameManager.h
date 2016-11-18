@@ -31,6 +31,7 @@ private:
 	}
 	Rasterizer rasterizer;
 	Cube *pcube;
+	Light light;
 	
 };
 #endif

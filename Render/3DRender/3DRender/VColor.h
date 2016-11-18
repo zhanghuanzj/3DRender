@@ -5,6 +5,7 @@
 struct VColor
 {
 	VColor(float a_,float r_,float g_,float b_):a(a_),r(r_),g(g_),b(b_){}
+	VColor():a(0),r(0),g(0),b(0){}
 	VColor interp(const VColor &c,float factor)
 	{
 		float na = a + (c.a-a)*factor;
@@ -63,6 +64,15 @@ inline VColor operator*(float v,const VColor &color)
 		color.b * v);
 }
 
+inline VColor operator*(const VColor &color1,const VColor &color2)
+{
+	return VColor(
+		color1.a * color2.a,
+		color1.r * color2.r,
+		color1.g * color2.g,
+		color1.b * color2.b);
+}
+
 
 
 inline VColor operator+(const VColor &color1,const VColor &color2)
@@ -81,6 +91,24 @@ inline VColor operator-(const VColor &color1,const VColor &color2)
 		color1.r - color2.r,
 		color1.g - color2.g,
 		color1.b - color2.b);
+}
+
+inline VColor operator*(const VColor &color,const Vector3 &v)
+{
+	return VColor(
+		color.a * 1,
+		color.r * v.x,
+		color.g * v.y,
+		color.b * v.z);
+}
+
+inline VColor operator*(const Vector3 &v,const VColor &color)
+{
+	return VColor(
+		color.a * 1,
+		color.r * v.x,
+		color.g * v.y,
+		color.b * v.z);
 }
 
 #endif
