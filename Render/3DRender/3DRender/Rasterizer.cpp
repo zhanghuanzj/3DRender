@@ -1,6 +1,7 @@
 #include "Rasterizer.h"
 
 RenderState Rasterizer::renderState = RenderState::TEXTURE;
+LightState Rasterizer::lightState = LightState::OFF;
 
 void Rasterizer::sort_vertex(Vertex &v1,Vertex &v2,Vertex &v3)
 {
@@ -247,15 +248,25 @@ void Rasterizer::draw_scanline(Vertex vl,Vertex vr,int y)
 		if (renderState==RenderState::TEXTURE)
 		{
 			AColor color = texture->get_color(scanline.u*w,scanline.v*w);
-			color.r_ = max(0,min(color.r_*scanline.light.r,255));
-			color.g_ = max(0,min(color.g_*scanline.light.g,255));
-			color.b_ = max(0,min(color.b_*scanline.light.b,255));
+			if (lightState==LightState::ON)
+			{
+				color.r_ = max(0,min(color.r_*scanline.light.r,255));
+				color.g_ = max(0,min(color.g_*scanline.light.g,255));
+				color.b_ = max(0,min(color.b_*scanline.light.b,255));
+			}
+			
 			directX.drawPixel(scanline.x+i,scanline.y,color);
 			scanline.to_next_texture();
 		}
 		else 
 		{
-			VColor color = scanline.color*w;		
+			VColor color = scanline.color*w;	
+			if (lightState==LightState::ON)
+			{
+				color.r = max(0,min(color.r*scanline.light.r,1));
+				color.g = max(0,min(color.g*scanline.light.g,1));
+				color.b = max(0,min(color.b*scanline.light.b,1));
+			}
 			directX.drawPixel(scanline.x+i,scanline.y,color.to_AColor());
 			scanline.to_next_color();
 		}

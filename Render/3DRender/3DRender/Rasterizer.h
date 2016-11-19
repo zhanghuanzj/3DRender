@@ -79,6 +79,7 @@ private:
 	DirectX &directX;
 public:
 	static RenderState renderState;
+	static LightState lightState;
 };
 
 

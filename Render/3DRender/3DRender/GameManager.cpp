@@ -104,7 +104,14 @@ void GameManager::draw_cube()
 	rotate_vector.normalize();
 	Matrix cube_rotate_matrix;
 	cube_rotate_matrix.identify();
-	cube_rotate_matrix.setRotate(rotate_vector,0.1);
+	static int i = 1;
+	//if (i==1)
+	//{
+	//	cube_rotate_matrix.setRotate(rotate_vector,150);
+	//	--i;
+	//}
+	cube_rotate_matrix.setRotate(rotate_vector,0.5);
+	
 
 	Matrix model_move_matrix;
 	model_move_matrix.identify();
@@ -122,15 +129,20 @@ void GameManager::draw_cube()
 		//Diffuse
 		Vector3 l = light.position - pcube->trans_vertexes[i].position;
 		l.normalize();
-		//pcube->trans_vertexes[i].light += max(pcube->trans_vertexes[i].normal*l,0)*light.diffuse*pcube->material.diffuse;
+		float nl = pcube->trans_vertexes[i].normal*l;
+		pcube->trans_vertexes[i].light += max(nl,0)*light.diffuse*pcube->material.diffuse;
 		//Specular
-		Vector3 r = 2*pcube->trans_vertexes[i].normal*(pcube->trans_vertexes[i].normal*l) - l;
-		r.normalize();
-		Vector3 v = camera.get_position() - pcube->trans_vertexes[i].position;
-		v.normalize();
-		pcube->trans_vertexes[i].light += max(r*v,0)*light.specular*pcube->material.specular;
+		if (nl>0)
+		{
+			Vector3 r = 2*pcube->trans_vertexes[i].normal*nl - l;
+			r.normalize();
+			Vector3 v = camera.get_position() - pcube->trans_vertexes[i].position;
+			v.normalize();
+			pcube->trans_vertexes[i].light += max(r*v,0)*light.specular*pcube->material.specular;
+		}
+		
 		//Ambient
-		//pcube->trans_vertexes[i].light += light.ambient*pcube->material.ambient;
+		pcube->trans_vertexes[i].light += light.ambient*pcube->material.ambient;
 	}
 	//2.世界空间————(观察变换)————>相机空间
 	camera.eye_transform(pcube->trans_vertexes); 

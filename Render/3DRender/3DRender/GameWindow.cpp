@@ -96,6 +96,17 @@ LRESULT CALLBACK GameWindow::WndProc(HWND hwnd,UINT message,WPARAM wparam,LPARAM
 		break;
 	case WM_KEYDOWN:
 		if (wparam==VK_ESCAPE)DestroyWindow(hwnd);
+		else if (wparam=='L')
+		{
+			if (Rasterizer::lightState==LightState::ON)
+			{
+				Rasterizer::lightState=LightState::OFF;
+			}
+			else
+			{
+				Rasterizer::lightState=LightState::ON;
+			}
+		}
 		else if (wparam==VK_UP) Camera::instance().move_along_up_vector(units);
 		else if (wparam==VK_DOWN) Camera::instance().move_along_up_vector(-units);
 		else if (wparam==VK_LEFT) Camera::instance().move_along_right_vector(-units);

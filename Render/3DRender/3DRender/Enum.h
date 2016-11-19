@@ -7,4 +7,10 @@ enum class RenderState
 	TEXTURE,
 	COLOR
 };
+
+enum class LightState
+{
+	ON,
+	OFF
+};
 #endif
