@@ -32,16 +32,13 @@ public:
 	//缓冲区翻转显示
 	void flipSurface();
 
-	//设置渲染模式
-	void set_render_state(RenderState render_sate){render_state_=render_sate;}
-
 
 	DWORD ARGB(int a,int r,int g,int b){return DWORD((a<<24)+(r<<16)+(g<<8)+b);}
 	//析构
 	~DirectX();
 
 private:
-	DirectX():pD3DXDevice(nullptr),pD3DSurface(nullptr),render_state_(RenderState::COLOR){}
+	DirectX():pD3DXDevice(nullptr),pD3DSurface(nullptr){}
 
 	IDirect3DDevice9* pD3DXDevice;
 	IDirect3DSurface9* pD3DSurface;
@@ -51,7 +48,6 @@ private:
 	int width_;
 	int height_;
 	int buffer_size_;
-	RenderState render_state_;
 
 };
 

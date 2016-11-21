@@ -67,6 +67,11 @@
       <ProjName>3DRender</ProjName>
     </ProjBinary>
   </Binaries>
+  <Reports>
+    <Report>
+      <Path>3DRender161120.vsp</Path>
+    </Report>
+  </Reports>
   <Launches>
     <ProjBinary>
       <Path>:PB:{0EF48D86-D33F-4A0A-93EC-6EBB276F79A0}|3DRender\3DRender.vcxproj</Path>

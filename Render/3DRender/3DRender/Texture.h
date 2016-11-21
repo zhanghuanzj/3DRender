@@ -21,7 +21,6 @@ public:
 	{
 		return pixels[(int)((width-1)*u)*width+(int)((height-1)*v)];
 	}
-	AColor Texture::get_color2(int u,int v);
 	Gdiplus::Bitmap *bitmap;
 	int width;
 	int height;

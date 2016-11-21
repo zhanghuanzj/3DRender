@@ -9,20 +9,20 @@ GameManager& GameManager::Instance()
 void GameManager::game_start(const int WIDTH,const int HEIGHT)
 {
 	//Window
-	GameWindow myWindow("Render","Refactor",WIDTH,HEIGHT);
+	GameWindow myWindow("Render","3DRender",WIDTH,HEIGHT);
 	//Camera
 	Camera::instance(WIDTH,HEIGHT);
 	//DirectX
 	DirectX::instance().initialDirectX(GetModuleHandle(nullptr),myWindow.get_hwnd(),WIDTH,HEIGHT);
 	//Cube
-	pcube = new Cube(1,"texture1.bmp",Vector3(0,0,6));
+	pcube = new Cube(1,"pal5q.jpg",Vector3(0,0,6));
 	//Rasterizer
 	rasterizer.set_texture(&pcube->texture);
 	//Light
-	light.position = Vector3(-1000,1000,5);
-	light.diffuse = VColor(0.0f,1.0f,1.0f,1.0f);
+	light.position = Vector3(-1000,1000,7);
+	light.diffuse = VColor(0.0f,0.7f,0.7f,0.7f);
 	light.specular = VColor(0.0f,1.0f,1.0f,1.0f);
-	light.ambient = VColor(0.0f,1.0f,1.0f,1.0f);
+	light.ambient = VColor(0.0f,0.4f,0.4f,0.4f);
 	//Message Loop
 	myWindow.message_dispatch();
 }
@@ -110,7 +110,7 @@ void GameManager::draw_cube()
 	//	cube_rotate_matrix.setRotate(rotate_vector,150);
 	//	--i;
 	//}
-	cube_rotate_matrix.setRotate(rotate_vector,0.5);
+	cube_rotate_matrix.setRotate(rotate_vector,1);
 	
 
 	Matrix model_move_matrix;
