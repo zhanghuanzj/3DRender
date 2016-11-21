@@ -22,12 +22,17 @@
  
  
  ![像素绘制](http://i.imgur.com/QOE5dDf.png)
+ 
 	像素绘制
 ![三角形光栅化](http://i.imgur.com/UZXC2oK.png)
+
 	三角形光栅化
 ![相框模型](http://i.imgur.com/qQDIDqA.png)
+
 	线框模型
 ![](http://i.imgur.com/WJgm3oH.png)
+
 	光栅化cube
 ![](http://i.imgur.com/CLny0rV.png)
+
 	纹理模型带光照
