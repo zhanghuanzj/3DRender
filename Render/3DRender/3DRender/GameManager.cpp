@@ -36,6 +36,7 @@ void GameManager::game_update()
 
 	//draw_cube();
 	draw_circle(400,400,200);
+	draw_ellipse(400,400,200,100);
 
 	directX.unlockSurface();
 	directX.flipSurface();
@@ -44,6 +45,17 @@ void GameManager::game_update()
 void GameManager::game_end()
 {
 	cout<<"Game end!"<<endl;
+}
+
+void GameManager::fill_point(int cx,int cy,int x,int y)
+{
+	DirectX &directX = DirectX::instance();
+	AColor color(0,255,0,0);
+	
+	directX.drawPixel(x+cx,y+cy,color);
+	directX.drawPixel(-x+cx,y+cy,color);
+	directX.drawPixel(x+cx,-y+cy,color);
+	directX.drawPixel(-x+cx,-y+cy,color);
 }
 
 void GameManager::draw_pixels()
@@ -88,12 +100,6 @@ void GameManager::draw_triangle()
 	rasterizer.draw_triangle(v1,v2,v3);
 	rasterizer.draw_triangle(v1,v3,v4);
 
-	//Vertex v1(Vector3(500,294,0),VColor(0,1.0f,0,0),0,0);
-	//Vertex v2(Vector3(200,300,0),VColor(0,0,1.0f,0),0,0);
-	//Vertex v3(Vector3(270,305,0),VColor(0,0,0,1.0f),0,0);
-	//Vertex v4(Vector3(600,302,0),VColor(0,0,0,1.0f),0,0);
-	//rasterizer.draw_triangle(v1,v2,v3);
-	//rasterizer.draw_triangle(v1,v3,v4);
 }
 
 void GameManager::draw_cube()
@@ -153,22 +159,22 @@ void GameManager::draw_cube()
 	}
 }
 
+
+/************************************************************************/
+/* 中点画圆法
+ *  其它方法：
+ *     （1）：x步进求y法
+ *	   （2）：极坐标角度步进法
+ */
+/************************************************************************/
 void GameManager::draw_circle(int xc,int yc,int r)
 {
-	DirectX &directX = DirectX::instance();
-	AColor color(0,255,0,0);
 	int x = 0,y = r;
 	int p = 1-r;
 	while (x<=y)
 	{
-		directX.drawPixel(x+xc,y+xc,color);
-		directX.drawPixel(x+xc,-y+xc,color);
-		directX.drawPixel(-x+xc,y+xc,color);
-		directX.drawPixel(-x+xc,-y+xc,color);
-		directX.drawPixel(y+xc,x+xc,color);
-		directX.drawPixel(-y+xc,x+xc,color);
-		directX.drawPixel(y+xc,-x+xc,color);
-		directX.drawPixel(-y+xc,-x+xc,color);	
+		fill_point(xc,yc,x,y);
+		fill_point(xc,yc,y,x);
 		if (p<0)
 		{
 			p += 2*x+3;
@@ -179,5 +185,44 @@ void GameManager::draw_circle(int xc,int yc,int r)
 			--y;
 		}
 		++x;
+	}
+}
+
+/************************************************************************/
+/* 中点画椭圆                                                            */
+/************************************************************************/
+void GameManager::draw_ellipse(int xe,int ye,int rx,int ry)
+{
+	int A = rx*rx,B = ry*ry,C = A*B;
+	int px = B-A*ry+A/4;
+	int x = 0,y = ry;
+	while (x*B<y*A)
+	{
+		fill_point(xe,ye,x,y);
+		if (px<0)
+		{
+			px += B*(2*x+3);
+		}
+		else
+		{
+			px += B*(2*x+3)+A*(3-2*y);
+			--y;
+		}
+		++x;
+	}
+	int py = B*(x*x+x)+B/4+A*(y*y+1-2*y)-C;
+	while (y>=0)
+	{
+		fill_point(xe,ye,x,y);
+		if (py<0)
+		{
+			py += A*(3-2*y)+B*(2+2*x);
+			++x;
+		}
+		else
+		{
+			py += A*(3-2*y);
+		}
+		--y;
 	}
 }

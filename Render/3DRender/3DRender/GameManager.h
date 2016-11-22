@@ -15,12 +15,14 @@ public:
 	void game_update();
 	void game_end();
 
+	void fill_point(int cx,int cy,int x,int y);
 	void draw_pixels();
 	void draw_lines();
 	void draw_circle();
 	void draw_triangle();
 	void draw_cube();
 	void draw_circle(int xc,int yc,int r);
+	void draw_ellipse(int xe,int ye,int rx,int ry);
 private:
 	GameManager():pcube(nullptr){}
 	~GameManager()
