@@ -41,7 +41,7 @@ void transform_attribute_init()
 }
 
 State g_game_state = MODEL_TRANSFORM;
-RenderState g_render_state = TEXTURE;
+RenderState g_render_state = COLOR;
 const float g_rotate_theta = 3.5;
 //Vector3 light_vector(-1,1,-1);
 #define l0 1.0f
@@ -382,20 +382,20 @@ void draw_cube(RenderState renderState)
 		/*Debug::instance()<<"Index:"<<index<<endl;
 		Debug::instance()<<"Base:"<<base<<endl;
 		Debug::instance()<<base+(index-1+4)%4<<" "<<base+(index+1+4)%4<<endl;*/
-		Vector3 vl = model.local_vertexes_[base+(index-1+4)%4].position_ - model.local_vertexes_[index].position_;
+		/*Vector3 vl = model.local_vertexes_[base+(index-1+4)%4].position_ - model.local_vertexes_[index].position_;
 		Vector3 vr = model.local_vertexes_[base+(index+1+4)%4].position_ -model.local_vertexes_[index].position_;
-		model.trans_vertexes_[index].set_normal(cross_product(vl,vr)); 
+		model.trans_vertexes_[index].set_normal(cross_product(vl,vr)); */
 		//(2)Gourand着色
-		//model.trans_vertexes_[index].set_normal(model.trans_vertexes_[index].position_-model.world_position_); 
+		model.trans_vertexes_[index].set_normal(model.trans_vertexes_[index].position_-model.world_position_); 
 		model.trans_vertexes_[index].normal_.normalize(); 
 	
 		//漫反射&环境光&镜面反射光
 		float diff_cos_theta = max(light_vector*model.trans_vertexes_[index].normal_,0);
 		/*Debug::instance()<<"cos:"<<diff_cos_theta<<endl;*/
-		/*Vector3 view_vector = camera.get_position() - model.trans_vertexes_[index].position_;
+		Vector3 view_vector = camera.get_position() - model.trans_vertexes_[index].position_;
 		view_vector.normalize();
-		float sepc_cos_theta =max(0,view_vector*(2*(model.trans_vertexes_[index].normal_*light_vector)*model.trans_vertexes_[index].normal_-light_vector));*/
-		model.trans_vertexes_[index].light_ = diffuse_light*diff_cos_theta+/*specular_light*sepc_cos_theta+*/ambient_light;
+		float sepc_cos_theta =max(0,view_vector*(2*(model.trans_vertexes_[index].normal_*light_vector)*model.trans_vertexes_[index].normal_-light_vector));
+		model.trans_vertexes_[index].light_ = diffuse_light*diff_cos_theta+specular_light*sepc_cos_theta+ambient_light;
 		model.trans_vertexes_[index].light_.color_adjust();
 		++index;
 	}

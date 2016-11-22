@@ -1,4 +1,4 @@
-﻿生成启动时间为 2016/7/3 10:12:07。
+﻿生成启动时间为 2016/11/21 15:21:36。
      1>项目“C:\Users\Dell\Documents\GitHub\3DRender\Direct3DGame\Direct3DGame\Direct3DGame.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt GameWindow.cpp
@@ -36,4 +36,4 @@
 
 生成成功。
 
-已用时间 00:00:01.63
+已用时间 00:00:01.76

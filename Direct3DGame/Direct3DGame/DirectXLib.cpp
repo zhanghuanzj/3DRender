@@ -213,6 +213,9 @@ void DirectX::drawScanLine( Vertex &v1, Vertex &v2)
 		{
 			float factor = min(1.0f,df*(i-x_start));
 			AColor color = v1.color_.interp(v2.color_,factor);
+			color.r_ = CMID(color.r_*r,0,255);
+			color.g_ = CMID(color.g_*g,0,255);
+			color.b_ = CMID(color.b_*b,0,255);
 			drawPixel(i,v1.position_.y_,color,1/one_depth);
 		}
 		one_depth += dd;

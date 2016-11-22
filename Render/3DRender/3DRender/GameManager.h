@@ -20,6 +20,7 @@ public:
 	void draw_circle();
 	void draw_triangle();
 	void draw_cube();
+	void draw_circle(int xc,int yc,int r);
 private:
 	GameManager():pcube(nullptr){}
 	~GameManager()

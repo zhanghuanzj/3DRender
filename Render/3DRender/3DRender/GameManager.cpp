@@ -34,8 +34,8 @@ void GameManager::game_update()
 	directX.lockSurface();
 
 
-	draw_cube();
-
+	//draw_cube();
+	draw_circle(400,400,200);
 
 	directX.unlockSurface();
 	directX.flipSurface();
@@ -104,12 +104,6 @@ void GameManager::draw_cube()
 	rotate_vector.normalize();
 	Matrix cube_rotate_matrix;
 	cube_rotate_matrix.identify();
-	static int i = 1;
-	//if (i==1)
-	//{
-	//	cube_rotate_matrix.setRotate(rotate_vector,150);
-	//	--i;
-	//}
 	cube_rotate_matrix.setRotate(rotate_vector,1);
 	
 
@@ -156,5 +150,34 @@ void GameManager::draw_cube()
 	for (auto &triangle : triangles) 
 	{
 		rasterizer.draw_triangle(pcube->trans_vertexes[triangle.index1],pcube->trans_vertexes[triangle.index2],pcube->trans_vertexes[triangle.index3]);
+	}
+}
+
+void GameManager::draw_circle(int xc,int yc,int r)
+{
+	DirectX &directX = DirectX::instance();
+	AColor color(0,255,0,0);
+	int x = 0,y = r;
+	int p = 1-r;
+	while (x<=y)
+	{
+		directX.drawPixel(x+xc,y+xc,color);
+		directX.drawPixel(x+xc,-y+xc,color);
+		directX.drawPixel(-x+xc,y+xc,color);
+		directX.drawPixel(-x+xc,-y+xc,color);
+		directX.drawPixel(y+xc,x+xc,color);
+		directX.drawPixel(-y+xc,x+xc,color);
+		directX.drawPixel(y+xc,-x+xc,color);
+		directX.drawPixel(-y+xc,-x+xc,color);	
+		if (p<0)
+		{
+			p += 2*x+3;
+		}
+		else
+		{
+			p += 2*(x-y)+5;
+			--y;
+		}
+		++x;
 	}
 }
