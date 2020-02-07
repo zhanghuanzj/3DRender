@@ -3,6 +3,7 @@
 #include <vector>
 #include "Vector3.h"
 #include "Texture.h"
+
 using namespace std;
 
 class TrangleIndex
@@ -13,6 +14,7 @@ public:
 	TrangleIndex(){}
 	int indices[3];
 };
+
 class Model
 {
 public:

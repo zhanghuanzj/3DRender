@@ -2,20 +2,20 @@
 
 void Matrix::identify()
 {
-	m11=1 , m12=0 , m13=0 ;
-	m21=0 , m22=1 , m23=0 ;
-	m31=0 , m32=0 , m33=1 ;
-	tx=0  , ty=0  , tz=0  ;
+	m11 = 1, m12 = 0, m13 = 0;
+	m21 = 0, m22 = 1, m23 = 0;
+	m31 = 0, m32 = 0, m33 = 1;
+	tx = 0, ty = 0, tz = 0;
 }
 
 void Matrix::setTranslation(const Vector3& d)
 {
-	tx = d.x_ , ty = d.y_ , tz = d.z_;
+	tx = d.x_, ty = d.y_, tz = d.z_;
 }
 
 void Matrix::zeroTranslation()
 {
-	tx = ty = tz =0;
+	tx = ty = tz = 0;
 }
 
 void Matrix::setRotate(int axis,float theta)
@@ -26,38 +26,38 @@ void Matrix::setRotate(int axis,float theta)
 	switch(axis)
 	{
 	case 1: //X-axis
-		m11=1 , m12=0 , m13=0 ;
-		m21=0 , m22=c , m23=s ;
-		m31=0 , m32=-s , m33=c ;
+		m11 = 1, m12 = 0, m13 = 0;
+		m21 = 0, m22 = c, m23 = s;
+		m31 = 0, m32 = -s, m33 = c;
 		break;
 
 	case 2: //Y-axis
-		m11=c , m12=0 , m13=-s ;
-		m21=0 , m22=1 , m23=0 ;
-		m31=s , m32=0 , m33=c ;
+		m11 = c, m12 = 0, m13 = -s;
+		m21 = 0, m22 = 1, m23 = 0;
+		m31 = s, m32 = 0, m33 = c;
 		break;
 
 	case 3: //Z-axis
-		m11=c , m12=s , m13=0 ;
-		m21=-s , m22=c , m23=0 ;
-		m31=0 , m32=0 , m33=1 ;
+		m11 = c, m12 = s, m13 = 0;
+		m21 = -s, m22 = c, m23 = 0;
+		m31 = 0, m32 = 0, m33 = 1;
 		break;
 
 	default:
 		assert(false);
 	}
-	tx = ty = tz =0;
+	tx = ty = tz = 0;
 }
 
 void Matrix::setRotate(const Vector3 &axis, float theta) {
 
 	// Quick sanity check to make sure they passed in a unit vector
 	// to specify the axis
-	assert(fabs(axis*axis - 1.0f) < .01f);
+	assert(fabs(axis * axis - 1.0f) < .01f);
 
 	// Get sin and cosine of rotation angle
 
-	float	s =Sin(theta), c=Cos(theta);
+	float	s = Sin(theta), c = Cos(theta);
 
 	// Compute 1 - cos(theta) and some common subexpressions
 
@@ -70,17 +70,17 @@ void Matrix::setRotate(const Vector3 &axis, float theta) {
 	// opportunity for optimization due to the many common
 	// subexpressions.  We'll let the compiler handle that...
 
-	m11 = ax*axis.x_ + c;
-	m12 = ax*axis.y_ + axis.z_*s;
-	m13 = ax*axis.z_ - axis.y_*s;
+	m11 = ax * axis.x_ + c;
+	m12 = ax * axis.y_ + axis.z_ * s;
+	m13 = ax * axis.z_ - axis.y_ * s;
 
-	m21 = ay*axis.x_ - axis.z_*s;
-	m22 = ay*axis.y_ + c;
-	m23 = ay*axis.z_ + axis.x_*s;
+	m21 = ay * axis.x_ - axis.z_ * s;
+	m22 = ay * axis.y_ + c;
+	m23 = ay * axis.z_ + axis.x_ * s;
 
-	m31 = az*axis.x_ + axis.y_*s;
-	m32 = az*axis.y_ - axis.x_*s;
-	m33 = az*axis.z_ + c;
+	m31 = az * axis.x_ + axis.y_ * s;
+	m32 = az * axis.y_ - axis.x_ * s;
+	m33 = az * axis.z_ + c;
 
 	// Reset the translation portion
 
@@ -89,10 +89,10 @@ void Matrix::setRotate(const Vector3 &axis, float theta) {
 
 void Matrix::setScale(const Vector3 &s)
 {
-	m11=s.x_ , m12=0 , m13=0 ;
-	m21=0 , m22=s.y_ , m23=0 ;
-	m31=0 , m32=0 , m33=s.z_ ;
-	tx=0  , ty=0  , tz=0  ;
+	m11 = s.x_, m12 = 0, m13 = 0;
+	m21 = 0, m22 = s.y_, m23 = 0;
+	m31 = 0, m32 = 0, m33 = s.z_;
+	tx = 0, ty = 0, tz = 0;
 }
 
 Vector3	operator*(const Vector3 &p, const Matrix &m) {

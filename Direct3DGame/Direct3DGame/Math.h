@@ -1,6 +1,5 @@
 #ifndef MATH_H_
 #define MATH_H_
-#include <cmath>
 #include "Vector3.h"
 #define PI 3.141592654
 

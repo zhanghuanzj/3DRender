@@ -5,6 +5,7 @@ class Vector3
 {
 public:
 	Vector3(float x,float y,float z,float w=1):x_(x),y_(y),z_(z),w_(w){}
+	Vector3(float v) :x_(v), y_(v), z_(v), w_(1) {}
 	Vector3():x_(),y_(),z_(),w_(1){}
 	Vector3(const Vector3& v):x_(v.x_),y_(v.y_),z_(v.z_),w_(v.w_){}
 	
@@ -44,6 +45,11 @@ inline Vector3 operator*(const Vector3 &v,float f)
 inline Vector3 operator/(const Vector3 &v,float f)
 {
 	return v*(1/f);
+}
+
+inline Vector3 operator-(const Vector3 &v)
+{
+	return v * -1;
 }
 
 inline Vector3 cross_product(const Vector3 &v1,const Vector3 &v2)
