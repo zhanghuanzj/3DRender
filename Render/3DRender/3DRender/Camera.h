@@ -9,13 +9,13 @@
 class Camera
 {
 private:
-	Camera(int width_=800,int height_=600,float near_=1.0f,float far_=10000.0f,float fov_=60):
-		position(0.0f,0.0f,-1.0f),target(0.0f,0.0f,0.0f),up(0.0f,1.0f,0.0f),lookat(0.0f,0.0f,1.0f),right(1.0f,0.0f,0.0f),
-		Near(near_),Far(far_),fov(fov_),aspect(width_/height_),width(width_),height(height_){}
+	Camera(int width_=800, int height_=600, float near_=1.0f, float far_=10000.0f, float fov_=60):
+		position(0.0f, 0.0f, -1.0f), target(0.0f, 0.0f, 0.0f), up(0.0f, 1.0f, 0.0f), lookat(0.0f, 0.0f, 1.0f), right(1.0f, 0.0f, 0.0f), 
+		Near(near_), Far(far_), fov(fov_), aspect(width_/height_), width(width_), height(height_){}
 public:
-	static Camera& instance(int width_=800,int height_=600)
+	static Camera& instance(int width_=800, int height_=600)
 	{
-		static Camera camera(width_,height_);
+		static Camera camera(width_, height_);
 		return camera;
 	}
 
@@ -40,7 +40,7 @@ public:
 	void rotate_along_up_vector(float angle)
 	{
 		Matrix matrix;
-		matrix.setRotate(up,angle);
+		matrix.setRotate(up, angle);
 		right = right*matrix;
 		lookat = lookat*matrix;
 		target = lookat*target.length();
@@ -49,7 +49,7 @@ public:
 	void rotate_along_right_vector(float angle)
 	{
 		Matrix matrix;
-		matrix.setRotate(right,angle);
+		matrix.setRotate(right, angle);
 		up = up*matrix;
 		lookat = lookat*matrix;
 		target = lookat*target.length();
@@ -58,16 +58,16 @@ public:
 	void rotate_along_lookat_vector(float angle)
 	{
 		Matrix matrix;
-		matrix.setRotate(lookat,angle);
+		matrix.setRotate(lookat, angle);
 		up = up*matrix;
 		right = right*matrix;
 	}
 
-	void eye_transform(vector<Vertex> &vertexes )
+	Matrix get_view()
 	{
 		Matrix translation_matrix;
 		translation_matrix.identify();
-		translation_matrix.setTranslation(Vector3(-position.x,-position.y,-position.z));
+		translation_matrix.setTranslation(Vector3(-position.x, -position.y, -position.z));
 		Matrix rotate_matrix;
 		rotate_matrix.identify();
 		rotate_matrix.m11 = right.x;
@@ -80,11 +80,7 @@ public:
 		rotate_matrix.m32 = lookat.y;
 		rotate_matrix.m33 = lookat.z;
 
-		Matrix matrix = translation_matrix*rotate_matrix;
-		for (Vertex &v : vertexes) 
-		{
-			v.position = v.position*matrix;
-		}
+		return translation_matrix * rotate_matrix;
 	}
 
 	bool is_out_of_range(Vector3 v)
@@ -99,9 +95,23 @@ public:
 		return check>0;
 	}
 
-	vector<Triangle> cvv_clip(vector<Vertex> &vertexes,vector<Triangle> &triangles)
+	Matrix get_projection()
 	{
-		vector<bool> vertex_set(vertexes.size(),true);
+		Matrix proj_matrix;
+		proj_matrix.identify();
+		proj_matrix.m11 = Cot(fov / 2) / aspect;
+		proj_matrix.m22 = Cot(fov / 2);
+		proj_matrix.m33 = (Far + Near) / (Far - Near);
+		proj_matrix.tz = -2 * Near * Far / (Far - Near);
+		proj_matrix.m44 = 0;
+		proj_matrix.m34 = 1;
+
+		return proj_matrix;
+	}
+
+	vector<Triangle> cvv_clip(vector<Vertex> &vertexes, vector<Triangle> &triangles)
+	{
+		vector<bool> vertex_set(vertexes.size(), true);
 		vector<Triangle> new_triangles;
 
 		Matrix cvv_matrix;
@@ -141,6 +151,19 @@ public:
 		return new_triangles;
 	}
 
+	Matrix get_screen_map()
+	{
+		Matrix screen_matrix;
+		screen_matrix.identify();
+		screen_matrix.m11 = width / 2;
+		screen_matrix.tx = width / 2;
+		screen_matrix.m22 = -height / 2;
+		screen_matrix.ty = height / 2;
+		screen_matrix.m33 = (Far - Near) / 2;
+		screen_matrix.tz = (Far + Near) / 2;
+		return screen_matrix;
+	}
+
 	void screen_map(vector<Vertex> &vertexes)
 	{
 		Matrix screen_matrix;
@@ -158,10 +181,10 @@ public:
 		}
 	}
 
-	bool is_back(const Vertex &v1,const Vertex &v2,const Vertex &v3)
+	bool is_back(const Vertex &v1, const Vertex &v2, const Vertex &v3)
 	{
 		Vector3 to_triangle = v1.position - position;
-		return crossproduct(v1.position-v2.position,v3.position-v2.position)*v1.position>0;
+		return crossproduct(v1.position-v2.position, v3.position-v2.position)*v1.position>0;
 	}
 
 	vector<Triangle> get_front_triangle(vector<Vertex> &vertexes)
@@ -170,13 +193,13 @@ public:
 		for (int i=0;i<6;++i) 
 		{
 			int index = i*4;
-			if (!Camera::instance().is_back(vertexes[index],vertexes[index+1],vertexes[index+2]))
+			if (!Camera::instance().is_back(vertexes[index], vertexes[index+1], vertexes[index+2]))
 			{
-				triangle.push_back(Triangle(index,index+1,index+2));
+				triangle.push_back(Triangle(index, index+1, index+2));
 			}
-			if (!Camera::instance().is_back(vertexes[index+2],vertexes[index+3],vertexes[index]))
+			if (!Camera::instance().is_back(vertexes[index+2], vertexes[index+3], vertexes[index]))
 			{
-				triangle.push_back(Triangle(index+2,index+3,index));
+				triangle.push_back(Triangle(index+2, index+3, index));
 			}
 		}
 		return triangle;

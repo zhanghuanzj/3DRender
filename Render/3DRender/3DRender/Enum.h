@@ -3,14 +3,14 @@
 
 enum class RenderState
 {
-	WIREFRAME,
-	TEXTURE,
+	WIREFRAME, 
+	TEXTURE, 
 	COLOR
 };
 
 enum class LightState
 {
-	ON,
+	ON, 
 	OFF
 };
 #endif

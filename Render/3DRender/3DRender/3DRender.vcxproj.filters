@@ -21,12 +21,6 @@
     <ClCompile Include="GameWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Math.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="DirectXLib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -43,6 +37,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Pipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,6 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="VColor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
