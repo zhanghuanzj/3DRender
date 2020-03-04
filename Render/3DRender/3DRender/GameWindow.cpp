@@ -4,6 +4,9 @@ static POINT center;
 // 类静态成员初始化
 float GameWindow::deltaTime = 0.0f;
 int GameWindow::fps = 0;
+bool GameWindow::isFirst = true;
+bool GameWindow::isLeftClickDown = false;
+bool GameWindow::isRightClickDown = false;
 
 GameWindow::GameWindow(const string name_t, const string title_t, int width, int height):name(name_t), title(title_t), WIDTH(width), HEIGHT(height)
 {
@@ -35,27 +38,27 @@ GameWindow::GameWindow(const string name_t, const string title_t, int width, int
 	UpdateWindow(hwnd);
 
 	// 5.隐藏鼠标，设为屏幕中心
-	ShowCursor(false);
+	ShowCursor(true);
 	center.x = WIDTH / 2;
 	center.y = HEIGHT / 2;
 	ClientToScreen(hwnd, &center);
 	SetCursorPos(center.x, center.y);
 	// 6.限定鼠标在窗口内
-	RECT rect;
-	GetClientRect(hwnd, &rect);
-	POINT left_top;
-	left_top.x = rect.left;
-	left_top.y = rect.top;
-	POINT right_bottom;
-	right_bottom.x = rect.right;
-	right_bottom.y = rect.bottom;
-	ClientToScreen(hwnd, &left_top);
-	ClientToScreen(hwnd, &right_bottom);
-	rect.left = left_top.x;
-	rect.top = left_top.y;
-	rect.right = right_bottom.x;
-	rect.bottom = right_bottom.y;
-	ClipCursor(&rect);
+	//RECT rect;
+	//GetClientRect(hwnd, &rect);
+	//POINT left_top;
+	//left_top.x = rect.left;
+	//left_top.y = rect.top;
+	//POINT right_bottom;
+	//right_bottom.x = rect.right;
+	//right_bottom.y = rect.bottom;
+	//ClientToScreen(hwnd, &left_top);
+	//ClientToScreen(hwnd, &right_bottom);
+	//rect.left = left_top.x;
+	//rect.top = left_top.y;
+	//rect.right = right_bottom.x;
+	//rect.bottom = right_bottom.y;
+	//ClipCursor(&rect);
 }
 
 void GameWindow::message_dispatch()
@@ -98,7 +101,7 @@ void GameWindow::message_dispatch()
 LRESULT CALLBACK GameWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lParam)
 {
 	float units = 10.0f * deltaTime;
-	static POINT point;
+	static POINT point = center;
 
 	switch (message)
 	{
@@ -119,12 +122,10 @@ LRESULT CALLBACK GameWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPA
 				Rasterizer::lightState=LightState::ON;
 			}
 		}
-		else if (wparam==VK_UP) Camera::instance().move_along_up_vector(units);
-		else if (wparam==VK_DOWN) Camera::instance().move_along_up_vector(-units);
-		else if (wparam==VK_LEFT) Camera::instance().move_along_right_vector(-units);
-		else if (wparam==VK_RIGHT) Camera::instance().move_along_right_vector(units);
-		else if (wparam==VK_OEM_PLUS) Camera::instance().move_along_lookat_vector(units);
-		else if (wparam==VK_OEM_MINUS) Camera::instance().move_along_lookat_vector(-units);
+		else if (wparam=='A') Camera::instance().move_along_right_vector(-units);
+		else if (wparam=='D') Camera::instance().move_along_right_vector(units);
+		else if (wparam=='W') Camera::instance().move_along_lookat_vector(units);
+		else if (wparam=='S') Camera::instance().move_along_lookat_vector(-units);
 		else if (wparam==VK_TAB)
 		{
 			switch (Rasterizer::renderState)
@@ -143,19 +144,50 @@ LRESULT CALLBACK GameWindow::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPA
 			}
 		}
 		break;
+	case WM_LBUTTONDOWN:
+		isLeftClickDown = true;
+		isFirst = true;
+		break;
+	case WM_LBUTTONUP:
+		isLeftClickDown = false;
+		break;
+	case WM_RBUTTONDOWN:
+		isRightClickDown = true;
+		isFirst = true;
+		break;
+	case WM_RBUTTONUP:
+		isRightClickDown = false;
+		break;
 	case WM_MOUSEMOVE:
-		GetCursorPos(&point);
-		if (center.x!=point.x||center.y!=point.y)
+		if (isLeftClickDown || isRightClickDown)
 		{
-			float angle = 40.0f * deltaTime;
-			if (point.x>center.x) Camera::instance().rotate_along_up_vector(-angle);
-			else if (point.x<center.x) Camera::instance().rotate_along_up_vector(angle);
-			else if (point.y>center.y) Camera::instance().rotate_along_right_vector(-angle);
-			else if (point.y<center.y) Camera::instance().rotate_along_right_vector(angle);
-			point = center;
-			SetCursorPos(center.x, center.y);
+			POINT curPoint;
+			GetCursorPos(&curPoint);
+			if (!isFirst)
+			{
+				if (isLeftClickDown)
+				{
+					Camera::instance().rotate_around_model(curPoint.x - point.x, curPoint.y - point.y);
+				}
+				else
+				{
+					Camera::instance().move_around_model((curPoint.x - point.x) * deltaTime, (curPoint.y - point.y)  * deltaTime);
+				}
+				
+			}
+			isFirst = false;
+			point = curPoint;
 		}
-		
+		break;
+	case WM_MOUSEWHEEL:
+		if (HIWORD(wparam) == 120)
+		{
+			Camera::instance().move_along_lookat_vector(units);
+		}
+		else
+		{
+			Camera::instance().move_along_lookat_vector(units);
+		}
 		break;
 	default:
 		return DefWindowProc(hwnd, message, wparam, lParam);

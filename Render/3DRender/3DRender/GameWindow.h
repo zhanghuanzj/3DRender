@@ -29,6 +29,9 @@ private:
 	
 	static float deltaTime;
 	static int fps;
+	static bool isFirst;
+	static bool isLeftClickDown;
+	static bool isRightClickDown;
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lParam);
 };
 

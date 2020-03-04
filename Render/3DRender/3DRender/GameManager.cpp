@@ -16,8 +16,7 @@ void GameManager::game_start(const int WIDTH, const int HEIGHT)
 	//DirectX
 	DirectX::instance().initialDirectX(GetModuleHandle(nullptr), myWindow.get_hwnd(), WIDTH, HEIGHT);
 	//Cube
-	//pCube = new Cube(1, "Monkey.jpg", Vector3(0, 0, 6));
-	pCube = new Cube(1, "pal5q.jpg", Vector3(0, 0, 6));
+	pCube = new Cube(1, "pal5q.jpg", Vector3(0, 0, 0));
 
 	//Light
 	Pipeline &pipeline = Pipeline::Instance();
