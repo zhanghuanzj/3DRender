@@ -230,18 +230,18 @@ void Rasterizer::draw_scanline(Vertex vl, Vertex vr, int y)
 				VColor color = pipeline.fragment_shader(scanline.vertex);
 				directX.drawPixel(scanline.x + i, scanline.y, color, scanline.vertex.ndcPosition.z);
 			}
-			scanline.to_next_texture();
+			scanline.to_next_fragment();
 		}
 		else 
 		{
-			VColor color = scanline.vertex.color;	
+			VColor color = scanline.vertex.color * w;
 			directX.drawPixel(scanline.x + i, scanline.y, color);
 			scanline.to_next_color();
 		}
 	}
 }
 
-void Rasterizer::draw_top_flat_triangle(Vertex v1, Vertex v2, Vertex v3)
+void Rasterizer::draw_top_flat_triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3)
 {
 	int startY = v1.screenPosition.y + 0.5;
 	int endY = v3.screenPosition.y + 0.5;
@@ -254,7 +254,7 @@ void Rasterizer::draw_top_flat_triangle(Vertex v1, Vertex v2, Vertex v3)
 	}
 }
 
-void Rasterizer::draw_button_flat_triangle(Vertex v1, Vertex v2, Vertex v3)
+void Rasterizer::draw_button_flat_triangle(const Vertex &v1, const Vertex &v2, const Vertex &v3)
 {
 	int startY = v1.screenPosition.y + 0.5;
 	int endY = v3.screenPosition.y + 0.5;

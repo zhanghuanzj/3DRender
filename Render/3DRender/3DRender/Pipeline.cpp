@@ -103,14 +103,16 @@ void Pipeline::vertex_shader()
 
 		fragmentVertex[i].position = inputVertex[i].position * model;  //物体旋转，移动
 		fragmentVertex[i].normal = inputVertex[i].normal * inverse_transpose_matrix;  //法线处理
-		fragmentVertex[i].u = inputVertex[i].u;
-		fragmentVertex[i].v = inputVertex[i].v;
-		fragmentVertex[i].color = inputVertex[i].color;
+		fragmentVertex[i].u = inputVertex[i].u * fragmentVertex[i].inv_w; // 透视校正初始化
+		fragmentVertex[i].v = inputVertex[i].v * fragmentVertex[i].inv_w;
+		fragmentVertex[i].color = inputVertex[i].color * fragmentVertex[i].inv_w;
 	}
 }
 
 VColor Pipeline::fragment_shader(const Vertex &vertex)
 {
+	// 透视校正
+	float w = 1.0f / vertex.inv_w;
 	if (rasterizer.lightState == LightState::ON)
 	{
 		Vector3 light_vec = light.position - vertex.position;
@@ -130,12 +132,12 @@ VColor Pipeline::fragment_shader(const Vertex &vertex)
 		half_vec.normalize();
 		VColor specular = pow(max(vertex.normal * half_vec, 0.0), 32) * light.color;
 
-		VColor tex_color = pTexture->get_color(vertex.u, vertex.v);
+		VColor tex_color = pTexture->get_color(vertex.u * w, vertex.v * w);
 		return (ambient + diffuse + specular) * tex_color;
 	} 
 	else
 	{
-		return pTexture->get_color(vertex.u, vertex.v);
+		return pTexture->get_color(vertex.u * w, vertex.v * w);
 	}
 }
 

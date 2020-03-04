@@ -16,9 +16,9 @@ struct Material
 class Cube
 {
 public:
-	Cube(int n, string path, Vector3 pos):local_vertexes(24, Vertex()), trans_vertexes(24, Vertex()), texture(path), position(pos)
+	Cube(float n, string path, Vector3 pos):local_vertexes(24, Vertex()), trans_vertexes(24, Vertex()), texture(path), position(pos)
 	{
-		int cube_vertex[24][3] = { 
+		float cube_vertex[24][3] = { 
 			{-n, n, -n}, {-n, -n, -n}, {n, -n, -n}, {n, n, -n}, 
 			{n, n, -n}, {n, -n, -n}, {n, -n, n}, {n, n, n}, 
 			{n, n, n}, {n, -n, n}, {-n, -n, n}, {-n, n, n}, 
@@ -27,7 +27,7 @@ public:
 			{-n, -n, -n}, {-n, -n, n}, {n, -n, n}, {n, -n, -n}
 		};
 
-		int colors[24][3] = {
+		float colors[24][3] = {
 			//{1.0f,  0.0f,  1.0f}, {1.0f,  0.0f,  0.0f}, {1.0f,  1.0f,  0.0f}, {1.0f,  1.0f,  1.0f},  //«∞
 			//{1.0f,  1.0f,  1.0f}, {1.0f,  1.0f,  0.0f}, {0.0f,  1.0f,  0.0f}, {0.0f,  1.0f,  1.0f},  //”“
 			//{0.0f,  1.0f,  1.0f}, {0.0f,  1.0f,  0.0f}, {1.0f,  1.0f,  1.0f}, {0.0f,  0.0f,  1.0f},  //∫Û

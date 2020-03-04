@@ -41,7 +41,7 @@ public:
 		return  * this;
 	}
 
-	inline Vector3 interp(const Vector3 &v, float factor)
+	inline Vector3 interp(const Vector3 &v, float factor) const
 	{
 		float x_ = x + (v.x - x) * factor;
 		float y_ = y + (v.y - y) * factor;

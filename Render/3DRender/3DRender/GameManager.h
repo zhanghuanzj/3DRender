@@ -23,7 +23,7 @@ public:
 	void draw_cube();
 	void draw_circle(int xc, int yc, int r);
 	void draw_ellipse(int xe, int ye, int rx, int ry);
-	void set_model_rotate_matrix(float x, float y);
+
 	~GameManager()
 	{
 		if (pCube != nullptr)
@@ -35,6 +35,6 @@ public:
 private:
 	GameManager():pCube(nullptr){}
 	Cube  * pCube;
-	unsigned int rotateAngle = 0.0f;
+	unsigned int rotateAngle = 0;
 };
 #endif

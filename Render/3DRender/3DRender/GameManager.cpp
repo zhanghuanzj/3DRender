@@ -16,12 +16,12 @@ void GameManager::game_start(const int WIDTH, const int HEIGHT)
 	//DirectX
 	DirectX::instance().initialDirectX(GetModuleHandle(nullptr), myWindow.get_hwnd(), WIDTH, HEIGHT);
 	//Cube
-	pCube = new Cube(1, "pal5q.jpg", Vector3(0, 0, 0));
+	pCube = new Cube(1.0f, "pal5q.jpg", Vector3(0.0f, 0.0f, 0.0f));
 
 	//Light
 	Pipeline &pipeline = Pipeline::Instance();
 	pipeline.set_texture(&pCube->texture);
-	pipeline.light.position = Vector3(-1000, 1000, 7);
+	pipeline.light.position = Vector3(-1000.0f, 1000.0f, 7.0f);
 	pipeline.light.color = VColor(0.0f, 1.0f, 1.0f, 1.0f);
 	//Message Loop
 	myWindow.message_dispatch();
@@ -114,7 +114,7 @@ void GameManager::draw_cube()
 	rotate_vector.normalize();
 	Matrix cube_rotate_matrix;
 	cube_rotate_matrix.identify();
-	cube_rotate_matrix.setRotate(rotate_vector, rotateAngle);
+	cube_rotate_matrix.setRotate(rotate_vector, static_cast<float>(rotateAngle));
 	rotateAngle = (rotateAngle + 1) % 360;
 	
 	Matrix model_move_matrix;

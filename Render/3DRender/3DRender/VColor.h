@@ -7,8 +7,8 @@ struct VColor
 {
 	VColor(float a_, float r_, float g_, float b_):a(a_), r(r_), g(g_), b(b_){}
 	VColor(const VColor &color) :a(color.a), r(color.r), g(color.g), b(color.b) {}
-	VColor():a(0), r(0), g(0), b(0){}
-	inline VColor interp(const VColor &c, float factor)
+	VColor():a(1.0f), r(0.0f), g(0.0f), b(0.0f){}
+	inline VColor interp(const VColor &c, float factor) const
 	{
 		float na = a + (c.a-a) * factor;
 		float nr = r + (c.r-r) * factor;

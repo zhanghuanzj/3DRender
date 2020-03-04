@@ -41,10 +41,14 @@ public:
 		Pointer to the locked bits. If a RECT was provided to the LockRect call,
 		pBits will be appropriately offset from the start of the surface.*/
 		DWORD* pBits = (DWORD*)LockRect.pBits;
-		int r = color.r * 255;
-		int g = color.g * 255;
-		int b = color.b * 255;
-		int a = 255;
+		int r = Clamp(color.r * 255, 0, 255);
+		int g = Clamp(color.g * 255, 0, 255);
+		int b = Clamp(color.b * 255, 0, 255);
+		int a = color.a * 255;
+		if (a > 255 || b > 255 || r > 255)
+		{
+			cout << a << endl;
+		}
 		pBits[x + y * (LockRect.Pitch >> 2)] = DWORD((a << 24) + (r << 16) + (g << 8) + b);//LockRect.Pitch表示WIDTH所占的字节数
 		int index = y * (width_)+x;
 		z_buffer_[index] = depth;
